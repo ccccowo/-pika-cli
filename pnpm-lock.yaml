@@ -1,0 +1,1045 @@
+lockfileVersion: 5.3
+
+importers:
+
+  .:
+    specifiers:
+      '@changesets/cli': ^2.27.10
+      '@types/node': ^22.10.2
+      openai: ^4.76.3
+      prettier-plugin-organize-imports: ^4.1.0
+      prettier-plugin-packagejson: ^2.5.6
+      typescript: ^5.7.2
+    dependencies:
+      openai: 4.76.3
+    devDependencies:
+      '@changesets/cli': 2.27.10
+      '@types/node': 22.10.2
+      prettier-plugin-organize-imports: 4.1.0_typescript@5.7.2
+      prettier-plugin-packagejson: 2.5.6
+      typescript: 5.7.2
+
+  packages/cli:
+    specifiers:
+      '@pika-cli/create': workspace:^0.0.1
+      '@types/fs-extra': ^11.0.4
+      commander: ^12.1.0
+      fs-extra: ^11.2.0
+    dependencies:
+      '@pika-cli/create': link:../create
+      commander: 12.1.0
+      fs-extra: 11.2.0
+    devDependencies:
+      '@types/fs-extra': 11.0.4
+
+  packages/cli-service:
+    specifiers: {}
+
+  packages/create:
+    specifiers: {}
+
+  packages/template-plugin-rollup-ts:
+    specifiers: {}
+
+packages:
+
+  /@babel/runtime/7.26.0:
+    resolution: {integrity: sha1-hgDC9ZXyd8YIFSVkGLhTVqZRc8E=, tarball: '@babel/runtime/download/@babel/runtime-7.26.0.tgz'}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.14.1
+    dev: true
+
+  /@changesets/apply-release-plan/7.0.6:
+    resolution: {integrity: sha1-Oa8/gPO6KHkgJx0aVC71OU6wv4o=, tarball: '@changesets/apply-release-plan/download/@changesets/apply-release-plan-7.0.6.tgz'}
+    dependencies:
+      '@changesets/config': 3.0.4
+      '@changesets/get-version-range-type': 0.4.0
+      '@changesets/git': 3.0.2
+      '@changesets/should-skip-package': 0.1.1
+      '@changesets/types': 6.0.0
+      '@manypkg/get-packages': 1.1.3
+      detect-indent: 6.1.0
+      fs-extra: 7.0.1
+      lodash.startcase: 4.4.0
+      outdent: 0.5.0
+      prettier: 2.8.8
+      resolve-from: 5.0.0
+      semver: 7.6.3
+    dev: true
+
+  /@changesets/assemble-release-plan/6.0.5:
+    resolution: {integrity: sha1-2YewHC2RyLL4Hu3S31a6NV5M5TY=, tarball: '@changesets/assemble-release-plan/download/@changesets/assemble-release-plan-6.0.5.tgz'}
+    dependencies:
+      '@changesets/errors': 0.2.0
+      '@changesets/get-dependents-graph': 2.1.2
+      '@changesets/should-skip-package': 0.1.1
+      '@changesets/types': 6.0.0
+      '@manypkg/get-packages': 1.1.3
+      semver: 7.6.3
+    dev: true
+
+  /@changesets/changelog-git/0.2.0:
+    resolution: {integrity: sha1-Hz3hG+yv/1o46+KVA4pgJAPJOoY=, tarball: '@changesets/changelog-git/download/@changesets/changelog-git-0.2.0.tgz'}
+    dependencies:
+      '@changesets/types': 6.0.0
+    dev: true
+
+  /@changesets/cli/2.27.10:
+    resolution: {integrity: sha1-srmMqvb4pmMFkkVvB6iB52hPato=, tarball: '@changesets/cli/download/@changesets/cli-2.27.10.tgz'}
+    hasBin: true
+    dependencies:
+      '@changesets/apply-release-plan': 7.0.6
+      '@changesets/assemble-release-plan': 6.0.5
+      '@changesets/changelog-git': 0.2.0
+      '@changesets/config': 3.0.4
+      '@changesets/errors': 0.2.0
+      '@changesets/get-dependents-graph': 2.1.2
+      '@changesets/get-release-plan': 4.0.5
+      '@changesets/git': 3.0.2
+      '@changesets/logger': 0.1.1
+      '@changesets/pre': 2.0.1
+      '@changesets/read': 0.6.2
+      '@changesets/should-skip-package': 0.1.1
+      '@changesets/types': 6.0.0
+      '@changesets/write': 0.3.2
+      '@manypkg/get-packages': 1.1.3
+      ansi-colors: 4.1.3
+      ci-info: 3.9.0
+      enquirer: 2.4.1
+      external-editor: 3.1.0
+      fs-extra: 7.0.1
+      mri: 1.2.0
+      p-limit: 2.3.0
+      package-manager-detector: 0.2.7
+      picocolors: 1.1.1
+      resolve-from: 5.0.0
+      semver: 7.6.3
+      spawndamnit: 3.0.1
+      term-size: 2.2.1
+    dev: true
+
+  /@changesets/config/3.0.4:
+    resolution: {integrity: sha1-Ks/fPglCQUloSzvRDIgHS+zyUao=, tarball: '@changesets/config/download/@changesets/config-3.0.4.tgz'}
+    dependencies:
+      '@changesets/errors': 0.2.0
+      '@changesets/get-dependents-graph': 2.1.2
+      '@changesets/logger': 0.1.1
+      '@changesets/types': 6.0.0
+      '@manypkg/get-packages': 1.1.3
+      fs-extra: 7.0.1
+      micromatch: 4.0.8
+    dev: true
+
+  /@changesets/errors/0.2.0:
+    resolution: {integrity: sha1-PFRegCsPBTOJytzw7VTlY2/5Amo=, tarball: '@changesets/errors/download/@changesets/errors-0.2.0.tgz'}
+    dependencies:
+      extendable-error: 0.1.7
+    dev: true
+
+  /@changesets/get-dependents-graph/2.1.2:
+    resolution: {integrity: sha1-EIMEZS1L8iyf7p8dMdz5kIwkylE=, tarball: '@changesets/get-dependents-graph/download/@changesets/get-dependents-graph-2.1.2.tgz'}
+    dependencies:
+      '@changesets/types': 6.0.0
+      '@manypkg/get-packages': 1.1.3
+      picocolors: 1.1.1
+      semver: 7.6.3
+    dev: true
+
+  /@changesets/get-release-plan/4.0.5:
+    resolution: {integrity: sha1-LIV84vGUK4j/b/yyRmftxSvL+uo=, tarball: '@changesets/get-release-plan/download/@changesets/get-release-plan-4.0.5.tgz'}
+    dependencies:
+      '@changesets/assemble-release-plan': 6.0.5
+      '@changesets/config': 3.0.4
+      '@changesets/pre': 2.0.1
+      '@changesets/read': 0.6.2
+      '@changesets/types': 6.0.0
+      '@manypkg/get-packages': 1.1.3
+    dev: true
+
+  /@changesets/get-version-range-type/0.4.0:
+    resolution: {integrity: sha1-QpqQQQ7v70NoUCxBxjQT4pF0C/U=, tarball: '@changesets/get-version-range-type/download/@changesets/get-version-range-type-0.4.0.tgz'}
+    dev: true
+
+  /@changesets/git/3.0.2:
+    resolution: {integrity: sha1-ZpxwAEncO4ulP0beRfXEsebd6js=, tarball: '@changesets/git/download/@changesets/git-3.0.2.tgz'}
+    dependencies:
+      '@changesets/errors': 0.2.0
+      '@manypkg/get-packages': 1.1.3
+      is-subdir: 1.2.0
+      micromatch: 4.0.8
+      spawndamnit: 3.0.1
+    dev: true
+
+  /@changesets/logger/0.1.1:
+    resolution: {integrity: sha1-mSasTcj7AEcv4XEWA7a0dV1ktDU=, tarball: '@changesets/logger/download/@changesets/logger-0.1.1.tgz'}
+    dependencies:
+      picocolors: 1.1.1
+    dev: true
+
+  /@changesets/parse/0.4.0:
+    resolution: {integrity: sha1-XKu9mESzshPLg/XttXaEVMcN0rQ=, tarball: '@changesets/parse/download/@changesets/parse-0.4.0.tgz'}
+    dependencies:
+      '@changesets/types': 6.0.0
+      js-yaml: 3.14.1
+    dev: true
+
+  /@changesets/pre/2.0.1:
+    resolution: {integrity: sha1-PtYPnSGLO4HTB01yE5WC2hGpTV8=, tarball: '@changesets/pre/download/@changesets/pre-2.0.1.tgz'}
+    dependencies:
+      '@changesets/errors': 0.2.0
+      '@changesets/types': 6.0.0
+      '@manypkg/get-packages': 1.1.3
+      fs-extra: 7.0.1
+    dev: true
+
+  /@changesets/read/0.6.2:
+    resolution: {integrity: sha1-gWz3XdIqcOdawnlHTkS+Uvs/uRs=, tarball: '@changesets/read/download/@changesets/read-0.6.2.tgz'}
+    dependencies:
+      '@changesets/git': 3.0.2
+      '@changesets/logger': 0.1.1
+      '@changesets/parse': 0.4.0
+      '@changesets/types': 6.0.0
+      fs-extra: 7.0.1
+      p-filter: 2.1.0
+      picocolors: 1.1.1
+    dev: true
+
+  /@changesets/should-skip-package/0.1.1:
+    resolution: {integrity: sha1-diGO9M52kTUabf/bNW6IkyZ7Czo=, tarball: '@changesets/should-skip-package/download/@changesets/should-skip-package-0.1.1.tgz'}
+    dependencies:
+      '@changesets/types': 6.0.0
+      '@manypkg/get-packages': 1.1.3
+    dev: true
+
+  /@changesets/types/4.1.0:
+    resolution: {integrity: sha1-+498ojJP1UlUgk6GT5phqCy3j+A=, tarball: '@changesets/types/download/@changesets/types-4.1.0.tgz'}
+    dev: true
+
+  /@changesets/types/6.0.0:
+    resolution: {integrity: sha1-5Gq9qYkGEN0fvhYXcwFz0iZ1RL0=, tarball: '@changesets/types/download/@changesets/types-6.0.0.tgz'}
+    dev: true
+
+  /@changesets/write/0.3.2:
+    resolution: {integrity: sha1-vuZOTM3/SAhy310eOPK5E8uUARY=, tarball: '@changesets/write/download/@changesets/write-0.3.2.tgz'}
+    dependencies:
+      '@changesets/types': 6.0.0
+      fs-extra: 7.0.1
+      human-id: 1.0.2
+      prettier: 2.8.8
+    dev: true
+
+  /@manypkg/find-root/1.1.0:
+    resolution: {integrity: sha1-pi2O0c1+fUwR2dUqg5dGC11K0p8=, tarball: '@manypkg/find-root/download/@manypkg/find-root-1.1.0.tgz'}
+    dependencies:
+      '@babel/runtime': 7.26.0
+      '@types/node': 12.20.55
+      find-up: 4.1.0
+      fs-extra: 8.1.0
+    dev: true
+
+  /@manypkg/get-packages/1.1.3:
+    resolution: {integrity: sha1-4YTbm7p5L6RpPeRljPsUY6wsnEc=, tarball: '@manypkg/get-packages/download/@manypkg/get-packages-1.1.3.tgz'}
+    dependencies:
+      '@babel/runtime': 7.26.0
+      '@changesets/types': 4.1.0
+      '@manypkg/find-root': 1.1.0
+      fs-extra: 8.1.0
+      globby: 11.1.0
+      read-yaml-file: 1.1.0
+    dev: true
+
+  /@nodelib/fs.scandir/2.1.5:
+    resolution: {integrity: sha1-dhnC6yGyVIP20WdUi0z9WnSIw9U=, tarball: '@nodelib/fs.scandir/download/@nodelib/fs.scandir-2.1.5.tgz'}
+    engines: {node: '>= 8'}
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      run-parallel: 1.2.0
+    dev: true
+
+  /@nodelib/fs.stat/2.0.5:
+    resolution: {integrity: sha1-W9Jir5Tp0lvR5xsF3u1Eh2oiLos=, tarball: '@nodelib/fs.stat/download/@nodelib/fs.stat-2.0.5.tgz'}
+    engines: {node: '>= 8'}
+    dev: true
+
+  /@nodelib/fs.walk/1.2.8:
+    resolution: {integrity: sha1-6Vc36LtnRt3t9pxVaVNJTxlv5po=, tarball: '@nodelib/fs.walk/download/@nodelib/fs.walk-1.2.8.tgz'}
+    engines: {node: '>= 8'}
+    dependencies:
+      '@nodelib/fs.scandir': 2.1.5
+      fastq: 1.17.1
+    dev: true
+
+  /@pkgr/core/0.1.1:
+    resolution: {integrity: sha1-HsF+LtvsJcgwbUJOz78Tx94aqjE=, tarball: '@pkgr/core/download/@pkgr/core-0.1.1.tgz'}
+    engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
+    dev: true
+
+  /@types/fs-extra/11.0.4:
+    resolution: {integrity: sha1-4WqGO7iEP7qMUAQ2K1pz4XvsykU=, tarball: '@types/fs-extra/download/@types/fs-extra-11.0.4.tgz'}
+    dependencies:
+      '@types/jsonfile': 6.1.4
+      '@types/node': 22.10.2
+    dev: true
+
+  /@types/jsonfile/6.1.4:
+    resolution: {integrity: sha1-YUr+waEWTn1nC0p61k3z5763twI=, tarball: '@types/jsonfile/download/@types/jsonfile-6.1.4.tgz'}
+    dependencies:
+      '@types/node': 22.10.2
+    dev: true
+
+  /@types/node-fetch/2.6.12:
+    resolution: {integrity: sha1-irXD74Mw8TEAp0eeLNVtM4aDCgM=, tarball: '@types/node-fetch/download/@types/node-fetch-2.6.12.tgz'}
+    dependencies:
+      '@types/node': 22.10.2
+      form-data: 4.0.1
+    dev: false
+
+  /@types/node/12.20.55:
+    resolution: {integrity: sha1-wynL1DTEIWT4RrkJvW+FtVN/YkA=, tarball: '@types/node/download/@types/node-12.20.55.tgz'}
+    dev: true
+
+  /@types/node/18.19.68:
+    resolution: {integrity: sha1-9PENmSen6vNWjEam1znMCWfMtwE=, tarball: '@types/node/download/@types/node-18.19.68.tgz'}
+    dependencies:
+      undici-types: 5.26.5
+    dev: false
+
+  /@types/node/22.10.2:
+    resolution: {integrity: sha1-pIVCbm0f2vx7DUx7JOLHgYLdq7k=, tarball: '@types/node/download/@types/node-22.10.2.tgz'}
+    dependencies:
+      undici-types: 6.20.0
+
+  /abort-controller/3.0.0:
+    resolution: {integrity: sha1-6vVNU7YrrkE46AnKIlyEOabvs5I=, tarball: abort-controller/download/abort-controller-3.0.0.tgz}
+    engines: {node: '>=6.5'}
+    dependencies:
+      event-target-shim: 5.0.1
+    dev: false
+
+  /agentkeepalive/4.5.0:
+    resolution: {integrity: sha1-JnOtE4mzxBjFogxdc2T5PKBL6SM=, tarball: agentkeepalive/download/agentkeepalive-4.5.0.tgz}
+    engines: {node: '>= 8.0.0'}
+    dependencies:
+      humanize-ms: 1.2.1
+    dev: false
+
+  /ansi-colors/4.1.3:
+    resolution: {integrity: sha1-N2ETQOsiQ+cMxgTK011jJw1IeBs=, tarball: ansi-colors/download/ansi-colors-4.1.3.tgz}
+    engines: {node: '>=6'}
+    dev: true
+
+  /ansi-regex/5.0.1:
+    resolution: {integrity: sha1-CCyyyJyf6GWaMRpTvWpNxTAdswQ=, tarball: ansi-regex/download/ansi-regex-5.0.1.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /argparse/1.0.10:
+    resolution: {integrity: sha1-vNZ5HqWuCXJeF+WtmIE0zUCz2RE=, tarball: argparse/download/argparse-1.0.10.tgz}
+    dependencies:
+      sprintf-js: 1.0.3
+    dev: true
+
+  /array-union/2.1.0:
+    resolution: {integrity: sha1-t5hCCtvrHego2ErNii4j0+/oXo0=, tarball: array-union/download/array-union-2.1.0.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /asynckit/0.4.0:
+    resolution: {integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=, tarball: asynckit/download/asynckit-0.4.0.tgz}
+    dev: false
+
+  /better-path-resolve/1.0.0:
+    resolution: {integrity: sha1-E6NaEQTN1Ip7dL+HWPlqHuYT+Z0=, tarball: better-path-resolve/download/better-path-resolve-1.0.0.tgz}
+    engines: {node: '>=4'}
+    dependencies:
+      is-windows: 1.0.2
+    dev: true
+
+  /braces/3.0.3:
+    resolution: {integrity: sha1-SQMy9AkZRSJy1VqEgK3AxEE1h4k=, tarball: braces/download/braces-3.0.3.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      fill-range: 7.1.1
+    dev: true
+
+  /chardet/0.7.0:
+    resolution: {integrity: sha1-kAlISfCTfy7twkJdDSip5fDLrZ4=, tarball: chardet/download/chardet-0.7.0.tgz}
+    dev: true
+
+  /ci-info/3.9.0:
+    resolution: {integrity: sha1-QnmmICinsfJi80c/yWBfXiGMWbQ=, tarball: ci-info/download/ci-info-3.9.0.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /combined-stream/1.0.8:
+    resolution: {integrity: sha1-w9RaizT9cwYxoRCoolIGgrMdWn8=, tarball: combined-stream/download/combined-stream-1.0.8.tgz}
+    engines: {node: '>= 0.8'}
+    dependencies:
+      delayed-stream: 1.0.0
+    dev: false
+
+  /commander/12.1.0:
+    resolution: {integrity: sha1-AUI7NvUBJZ/arE0OTWDJbJkVhdM=, tarball: commander/download/commander-12.1.0.tgz}
+    engines: {node: '>=18'}
+    dev: false
+
+  /cross-spawn/7.0.6:
+    resolution: {integrity: sha1-ilj+ePANzXDDcEUXWd+/rwPo7p8=, tarball: cross-spawn/download/cross-spawn-7.0.6.tgz}
+    engines: {node: '>= 8'}
+    dependencies:
+      path-key: 3.1.1
+      shebang-command: 2.0.0
+      which: 2.0.2
+    dev: true
+
+  /delayed-stream/1.0.0:
+    resolution: {integrity: sha1-3zrhmayt+31ECqrgsp4icrJOxhk=, tarball: delayed-stream/download/delayed-stream-1.0.0.tgz}
+    engines: {node: '>=0.4.0'}
+    dev: false
+
+  /detect-indent/6.1.0:
+    resolution: {integrity: sha1-WSSF67v2s7GrK+F1yDk9BMoNV+Y=, tarball: detect-indent/download/detect-indent-6.1.0.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /detect-indent/7.0.1:
+    resolution: {integrity: sha1-y7BgoShCucTTM/HKxKpNobtmvCU=, tarball: detect-indent/download/detect-indent-7.0.1.tgz}
+    engines: {node: '>=12.20'}
+    dev: true
+
+  /detect-newline/4.0.1:
+    resolution: {integrity: sha1-/O/bVxPh+4yyg5uLbuIuZxarjyM=, tarball: detect-newline/download/detect-newline-4.0.1.tgz}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dev: true
+
+  /dir-glob/3.0.1:
+    resolution: {integrity: sha1-Vtv3PZkqSpO6FYT0U0Bj/S5BcX8=, tarball: dir-glob/download/dir-glob-3.0.1.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      path-type: 4.0.0
+    dev: true
+
+  /enquirer/2.4.1:
+    resolution: {integrity: sha1-kzNLP710/HCXsiSrSo+35Av0rlY=, tarball: enquirer/download/enquirer-2.4.1.tgz}
+    engines: {node: '>=8.6'}
+    dependencies:
+      ansi-colors: 4.1.3
+      strip-ansi: 6.0.1
+    dev: true
+
+  /esprima/4.0.1:
+    resolution: {integrity: sha1-E7BM2z5sXRnfkatph6hpVhmwqnE=, tarball: esprima/download/esprima-4.0.1.tgz}
+    engines: {node: '>=4'}
+    hasBin: true
+    dev: true
+
+  /event-target-shim/5.0.1:
+    resolution: {integrity: sha1-XU0+vflYPWOlMzzi3rdICrKwV4k=, tarball: event-target-shim/download/event-target-shim-5.0.1.tgz}
+    engines: {node: '>=6'}
+    dev: false
+
+  /extendable-error/0.1.7:
+    resolution: {integrity: sha1-YLmt8gYmSskgBYpzlWha5GcMK5Y=, tarball: extendable-error/download/extendable-error-0.1.7.tgz}
+    dev: true
+
+  /external-editor/3.1.0:
+    resolution: {integrity: sha1-ywP3QL764D6k0oPK7SdBqD8zVJU=, tarball: external-editor/download/external-editor-3.1.0.tgz}
+    engines: {node: '>=4'}
+    dependencies:
+      chardet: 0.7.0
+      iconv-lite: 0.4.24
+      tmp: 0.0.33
+    dev: true
+
+  /fast-glob/3.3.2:
+    resolution: {integrity: sha1-qQRQHlfP3S/83tRemaVP71XkYSk=, tarball: fast-glob/download/fast-glob-3.3.2.tgz}
+    engines: {node: '>=8.6.0'}
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      '@nodelib/fs.walk': 1.2.8
+      glob-parent: 5.1.2
+      merge2: 1.4.1
+      micromatch: 4.0.8
+    dev: true
+
+  /fastq/1.17.1:
+    resolution: {integrity: sha1-KlI/B6TnsegaQrkbi/IlQQd1O0c=, tarball: fastq/download/fastq-1.17.1.tgz}
+    dependencies:
+      reusify: 1.0.4
+    dev: true
+
+  /fdir/6.4.2_picomatch@4.0.2:
+    resolution: {integrity: sha1-3ap84YMbFhvDZXu5nLNuFiJwJok=, tarball: fdir/download/fdir-6.4.2.tgz}
+    peerDependencies:
+      picomatch: ^3 || ^4
+    peerDependenciesMeta:
+      picomatch:
+        optional: true
+    dependencies:
+      picomatch: 4.0.2
+    dev: true
+
+  /fill-range/7.1.1:
+    resolution: {integrity: sha1-RCZdPKwH4+p9wkdRY4BkN1SgUpI=, tarball: fill-range/download/fill-range-7.1.1.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      to-regex-range: 5.0.1
+    dev: true
+
+  /find-up/4.1.0:
+    resolution: {integrity: sha1-l6/n1s3AvFkoWEt8jXsW6KmqXRk=, tarball: find-up/download/find-up-4.1.0.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      locate-path: 5.0.0
+      path-exists: 4.0.0
+    dev: true
+
+  /form-data-encoder/1.7.2:
+    resolution: {integrity: sha1-Hxrj3M9Y7UaQuG2H5PV8ZU+6sEA=, tarball: form-data-encoder/download/form-data-encoder-1.7.2.tgz}
+    dev: false
+
+  /form-data/4.0.1:
+    resolution: {integrity: sha1-uhB22qqlv9fpnBpssCqgpc/5DUg=, tarball: form-data/download/form-data-4.0.1.tgz}
+    engines: {node: '>= 6'}
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.35
+    dev: false
+
+  /formdata-node/4.4.1:
+    resolution: {integrity: sha1-I/aly5y1UxWRLL7E/3sPWbvRkeI=, tarball: formdata-node/download/formdata-node-4.4.1.tgz}
+    engines: {node: '>= 12.20'}
+    dependencies:
+      node-domexception: 1.0.0
+      web-streams-polyfill: 4.0.0-beta.3
+    dev: false
+
+  /fs-extra/11.2.0:
+    resolution: {integrity: sha1-5w4X361kIyKH0BkpOZ4Op8hrDls=, tarball: fs-extra/download/fs-extra-11.2.0.tgz}
+    engines: {node: '>=14.14'}
+    dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 6.1.0
+      universalify: 2.0.1
+    dev: false
+
+  /fs-extra/7.0.1:
+    resolution: {integrity: sha1-TxicRKoSO4lfcigE9V6iPq3DSOk=, tarball: fs-extra/download/fs-extra-7.0.1.tgz}
+    engines: {node: '>=6 <7 || >=8'}
+    dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 4.0.0
+      universalify: 0.1.2
+    dev: true
+
+  /fs-extra/8.1.0:
+    resolution: {integrity: sha1-SdQ8RaiM2Wd2aMt74bRu/bjS4cA=, tarball: fs-extra/download/fs-extra-8.1.0.tgz}
+    engines: {node: '>=6 <7 || >=8'}
+    dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 4.0.0
+      universalify: 0.1.2
+    dev: true
+
+  /get-stdin/9.0.0:
+    resolution: {integrity: sha1-OYP/guA9VvGy6g0+YDJfOdcDpXU=, tarball: get-stdin/download/get-stdin-9.0.0.tgz}
+    engines: {node: '>=12'}
+    dev: true
+
+  /git-hooks-list/3.1.0:
+    resolution: {integrity: sha1-OG3FMdzBdHTPCUdD/zCYej0+cPw=, tarball: git-hooks-list/download/git-hooks-list-3.1.0.tgz}
+    dev: true
+
+  /glob-parent/5.1.2:
+    resolution: {integrity: sha1-hpgyxYA0/mikCTwX3BXoNA2EAcQ=, tarball: glob-parent/download/glob-parent-5.1.2.tgz}
+    engines: {node: '>= 6'}
+    dependencies:
+      is-glob: 4.0.3
+    dev: true
+
+  /globby/11.1.0:
+    resolution: {integrity: sha1-vUvpi7BC+D15b344EZkfvoKg00s=, tarball: globby/download/globby-11.1.0.tgz}
+    engines: {node: '>=10'}
+    dependencies:
+      array-union: 2.1.0
+      dir-glob: 3.0.1
+      fast-glob: 3.3.2
+      ignore: 5.3.2
+      merge2: 1.4.1
+      slash: 3.0.0
+    dev: true
+
+  /graceful-fs/4.2.11:
+    resolution: {integrity: sha1-QYPk6L8Iu24Fu7L30uDI9xLKQOM=, tarball: graceful-fs/download/graceful-fs-4.2.11.tgz}
+
+  /human-id/1.0.2:
+    resolution: {integrity: sha1-5lTUsrDYsH5F2p9gINivF+wKXfM=, tarball: human-id/download/human-id-1.0.2.tgz}
+    dev: true
+
+  /humanize-ms/1.2.1:
+    resolution: {integrity: sha1-xG4xWaKT9riW2ikxbYtv6Lt5u+0=, tarball: humanize-ms/download/humanize-ms-1.2.1.tgz}
+    dependencies:
+      ms: 2.1.3
+    dev: false
+
+  /iconv-lite/0.4.24:
+    resolution: {integrity: sha1-ICK0sl+93CHS9SSXSkdKr+czkIs=, tarball: iconv-lite/download/iconv-lite-0.4.24.tgz}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      safer-buffer: 2.1.2
+    dev: true
+
+  /ignore/5.3.2:
+    resolution: {integrity: sha1-PNQOcp82Q/2HywTlC/DrcivFlvU=, tarball: ignore/download/ignore-5.3.2.tgz}
+    engines: {node: '>= 4'}
+    dev: true
+
+  /is-extglob/2.1.1:
+    resolution: {integrity: sha1-qIwCU1eR8C7TfHahueqXc8gz+MI=, tarball: is-extglob/download/is-extglob-2.1.1.tgz}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+  /is-glob/4.0.3:
+    resolution: {integrity: sha1-ZPYeQsu7LuwgcanawLKLoeZdUIQ=, tarball: is-glob/download/is-glob-4.0.3.tgz}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      is-extglob: 2.1.1
+    dev: true
+
+  /is-number/7.0.0:
+    resolution: {integrity: sha1-dTU0W4lnNNX4DE0GxQlVUnoU8Ss=, tarball: is-number/download/is-number-7.0.0.tgz}
+    engines: {node: '>=0.12.0'}
+    dev: true
+
+  /is-plain-obj/4.1.0:
+    resolution: {integrity: sha1-1lAl7ew2V84DL9fbY8l4g+rtcfA=, tarball: is-plain-obj/download/is-plain-obj-4.1.0.tgz}
+    engines: {node: '>=12'}
+    dev: true
+
+  /is-subdir/1.2.0:
+    resolution: {integrity: sha1-t5HNKPq1IC6RoIKA1R2dclT9INQ=, tarball: is-subdir/download/is-subdir-1.2.0.tgz}
+    engines: {node: '>=4'}
+    dependencies:
+      better-path-resolve: 1.0.0
+    dev: true
+
+  /is-windows/1.0.2:
+    resolution: {integrity: sha1-0YUOuXkezRjmGCzhKjDzlmNLsZ0=, tarball: is-windows/download/is-windows-1.0.2.tgz}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+  /isexe/2.0.0:
+    resolution: {integrity: sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=, tarball: isexe/download/isexe-2.0.0.tgz}
+    dev: true
+
+  /js-yaml/3.14.1:
+    resolution: {integrity: sha1-2ugS/bOCX6MGYJqHFzg8UMNqBTc=, tarball: js-yaml/download/js-yaml-3.14.1.tgz}
+    hasBin: true
+    dependencies:
+      argparse: 1.0.10
+      esprima: 4.0.1
+    dev: true
+
+  /jsonfile/4.0.0:
+    resolution: {integrity: sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss=, tarball: jsonfile/download/jsonfile-4.0.0.tgz}
+    optionalDependencies:
+      graceful-fs: 4.2.11
+    dev: true
+
+  /jsonfile/6.1.0:
+    resolution: {integrity: sha1-vFWyY0eTxnnsZAMJTrE2mKbsCq4=, tarball: jsonfile/download/jsonfile-6.1.0.tgz}
+    dependencies:
+      universalify: 2.0.1
+    optionalDependencies:
+      graceful-fs: 4.2.11
+    dev: false
+
+  /locate-path/5.0.0:
+    resolution: {integrity: sha1-Gvujlq/WdqbUJQTQpno6frn2KqA=, tarball: locate-path/download/locate-path-5.0.0.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      p-locate: 4.1.0
+    dev: true
+
+  /lodash.startcase/4.4.0:
+    resolution: {integrity: sha1-lDbjTtJgk+1/+uGTYUQ1CRXZrdg=, tarball: lodash.startcase/download/lodash.startcase-4.4.0.tgz}
+    dev: true
+
+  /merge2/1.4.1:
+    resolution: {integrity: sha1-Q2iJL4hekHRVpv19xVwMnUBJkK4=, tarball: merge2/download/merge2-1.4.1.tgz}
+    engines: {node: '>= 8'}
+    dev: true
+
+  /micromatch/4.0.8:
+    resolution: {integrity: sha1-1m+hjzpHB2eJMgubGvMr2G2fogI=, tarball: micromatch/download/micromatch-4.0.8.tgz}
+    engines: {node: '>=8.6'}
+    dependencies:
+      braces: 3.0.3
+      picomatch: 2.3.1
+    dev: true
+
+  /mime-db/1.52.0:
+    resolution: {integrity: sha1-u6vNwChZ9JhzAchW4zh85exDv3A=, tarball: mime-db/download/mime-db-1.52.0.tgz}
+    engines: {node: '>= 0.6'}
+    dev: false
+
+  /mime-types/2.1.35:
+    resolution: {integrity: sha1-OBqHG2KnNEUGYK497uRIE/cNlZo=, tarball: mime-types/download/mime-types-2.1.35.tgz}
+    engines: {node: '>= 0.6'}
+    dependencies:
+      mime-db: 1.52.0
+    dev: false
+
+  /mri/1.2.0:
+    resolution: {integrity: sha1-ZyFID+wqEaSImGERWki2y+fMjws=, tarball: mri/download/mri-1.2.0.tgz}
+    engines: {node: '>=4'}
+    dev: true
+
+  /ms/2.1.3:
+    resolution: {integrity: sha1-V0yBOM4dK1hh8LRFedut1gxmFbI=, tarball: ms/download/ms-2.1.3.tgz}
+    dev: false
+
+  /node-domexception/1.0.0:
+    resolution: {integrity: sha1-aIjbRqH3HAt2s/dVUBa2P+ZHZuU=, tarball: node-domexception/download/node-domexception-1.0.0.tgz}
+    engines: {node: '>=10.5.0'}
+    dev: false
+
+  /node-fetch/2.7.0:
+    resolution: {integrity: sha1-0PD6bj4twdJ+/NitmdVQvalNGH0=, tarball: node-fetch/download/node-fetch-2.7.0.tgz}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+    dev: false
+
+  /openai/4.76.3:
+    resolution: {integrity: sha1-Z+qBua0zCZdZO6i9CRDS9KmSdAo=, tarball: openai/download/openai-4.76.3.tgz}
+    hasBin: true
+    peerDependencies:
+      zod: ^3.23.8
+    peerDependenciesMeta:
+      zod:
+        optional: true
+    dependencies:
+      '@types/node': 18.19.68
+      '@types/node-fetch': 2.6.12
+      abort-controller: 3.0.0
+      agentkeepalive: 4.5.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /os-tmpdir/1.0.2:
+    resolution: {integrity: sha1-u+Z0BseaqFxc/sdm/lc0VV36EnQ=, tarball: os-tmpdir/download/os-tmpdir-1.0.2.tgz}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+  /outdent/0.5.0:
+    resolution: {integrity: sha1-nhCYL9xBSSu0c60ThA0i+WVb4v8=, tarball: outdent/download/outdent-0.5.0.tgz}
+    dev: true
+
+  /p-filter/2.1.0:
+    resolution: {integrity: sha1-GxRyVirnoPdC8PPT03GOpm/5wJw=, tarball: p-filter/download/p-filter-2.1.0.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      p-map: 2.1.0
+    dev: true
+
+  /p-limit/2.3.0:
+    resolution: {integrity: sha1-PdM8ZHohT9//2DWTPrCG2g3CHbE=, tarball: p-limit/download/p-limit-2.3.0.tgz}
+    engines: {node: '>=6'}
+    dependencies:
+      p-try: 2.2.0
+    dev: true
+
+  /p-locate/4.1.0:
+    resolution: {integrity: sha1-o0KLtwiLOmApL2aRkni3wpetTwc=, tarball: p-locate/download/p-locate-4.1.0.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      p-limit: 2.3.0
+    dev: true
+
+  /p-map/2.1.0:
+    resolution: {integrity: sha1-MQko/u+cnsxltosXaTAYpmXOoXU=, tarball: p-map/download/p-map-2.1.0.tgz}
+    engines: {node: '>=6'}
+    dev: true
+
+  /p-try/2.2.0:
+    resolution: {integrity: sha1-yyhoVA4xPWHeWPr741zpAE1VQOY=, tarball: p-try/download/p-try-2.2.0.tgz}
+    engines: {node: '>=6'}
+    dev: true
+
+  /package-manager-detector/0.2.7:
+    resolution: {integrity: sha1-bD5H13lP3VE1EtAuIWDCS6VZ45s=, tarball: package-manager-detector/download/package-manager-detector-0.2.7.tgz}
+    dev: true
+
+  /path-exists/4.0.0:
+    resolution: {integrity: sha1-UTvb4tO5XXdi6METfvoZXGxhtbM=, tarball: path-exists/download/path-exists-4.0.0.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /path-key/3.1.1:
+    resolution: {integrity: sha1-WB9q3mWMu6ZaDTOA3ndTKVBU83U=, tarball: path-key/download/path-key-3.1.1.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /path-type/4.0.0:
+    resolution: {integrity: sha1-hO0BwKe6OAr+CdkKjBgNzZ0DBDs=, tarball: path-type/download/path-type-4.0.0.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /picocolors/1.1.1:
+    resolution: {integrity: sha1-PTIa8+q5ObCDyPkpodEs2oHCa2s=, tarball: picocolors/download/picocolors-1.1.1.tgz}
+    dev: true
+
+  /picomatch/2.3.1:
+    resolution: {integrity: sha1-O6ODNzNkbZ0+SZWUbBNlpn+wekI=, tarball: picomatch/download/picomatch-2.3.1.tgz}
+    engines: {node: '>=8.6'}
+    dev: true
+
+  /picomatch/4.0.2:
+    resolution: {integrity: sha1-d8dCkx6PO4gglGx2zQwfE3MNHas=, tarball: picomatch/download/picomatch-4.0.2.tgz}
+    engines: {node: '>=12'}
+    dev: true
+
+  /pify/4.0.1:
+    resolution: {integrity: sha1-SyzSXFDVmHNcUCkiJP2MbfQeMjE=, tarball: pify/download/pify-4.0.1.tgz}
+    engines: {node: '>=6'}
+    dev: true
+
+  /prettier-plugin-organize-imports/4.1.0_typescript@5.7.2:
+    resolution: {integrity: sha1-89N2QEao57pkkUMRWLm+b/2DuQ8=, tarball: prettier-plugin-organize-imports/download/prettier-plugin-organize-imports-4.1.0.tgz}
+    peerDependencies:
+      prettier: '>=2.0'
+      typescript: '>=2.9'
+      vue-tsc: ^2.1.0
+    peerDependenciesMeta:
+      vue-tsc:
+        optional: true
+    dependencies:
+      typescript: 5.7.2
+    dev: true
+
+  /prettier-plugin-packagejson/2.5.6:
+    resolution: {integrity: sha1-zTzKYOGqh+4847QDLByZl5jZ9xQ=, tarball: prettier-plugin-packagejson/download/prettier-plugin-packagejson-2.5.6.tgz}
+    peerDependencies:
+      prettier: '>= 1.16.0'
+    peerDependenciesMeta:
+      prettier:
+        optional: true
+    dependencies:
+      sort-package-json: 2.12.0
+      synckit: 0.9.2
+    dev: true
+
+  /prettier/2.8.8:
+    resolution: {integrity: sha1-6MXX6YpDBf/j3i4fxKyhpxwosdo=, tarball: prettier/download/prettier-2.8.8.tgz}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
+
+  /queue-microtask/1.2.3:
+    resolution: {integrity: sha1-SSkii7xyTfrEPg77BYyve2z7YkM=, tarball: queue-microtask/download/queue-microtask-1.2.3.tgz}
+    dev: true
+
+  /read-yaml-file/1.1.0:
+    resolution: {integrity: sha1-k2K7y9x3AHzI6kUZ/hwLghp84Ng=, tarball: read-yaml-file/download/read-yaml-file-1.1.0.tgz}
+    engines: {node: '>=6'}
+    dependencies:
+      graceful-fs: 4.2.11
+      js-yaml: 3.14.1
+      pify: 4.0.1
+      strip-bom: 3.0.0
+    dev: true
+
+  /regenerator-runtime/0.14.1:
+    resolution: {integrity: sha1-NWreECY/aF3aElEAzYYsHbiVMn8=, tarball: regenerator-runtime/download/regenerator-runtime-0.14.1.tgz}
+    dev: true
+
+  /resolve-from/5.0.0:
+    resolution: {integrity: sha1-w1IlhD3493bfIcV1V7wIfp39/Gk=, tarball: resolve-from/download/resolve-from-5.0.0.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /reusify/1.0.4:
+    resolution: {integrity: sha1-kNo4Kx4SbvwCFG6QhFqI2xKSXXY=, tarball: reusify/download/reusify-1.0.4.tgz}
+    engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
+    dev: true
+
+  /run-parallel/1.2.0:
+    resolution: {integrity: sha1-ZtE2jae9+SHrnZW9GpIp5/IaQ+4=, tarball: run-parallel/download/run-parallel-1.2.0.tgz}
+    dependencies:
+      queue-microtask: 1.2.3
+    dev: true
+
+  /safer-buffer/2.1.2:
+    resolution: {integrity: sha1-RPoWGwGHuVSd2Eu5GAL5vYOFzWo=, tarball: safer-buffer/download/safer-buffer-2.1.2.tgz}
+    dev: true
+
+  /semver/7.6.3:
+    resolution: {integrity: sha1-mA97VVC8F1+03AlAMIVif56zMUM=, tarball: semver/download/semver-7.6.3.tgz}
+    engines: {node: '>=10'}
+    hasBin: true
+    dev: true
+
+  /shebang-command/2.0.0:
+    resolution: {integrity: sha1-zNCvT4g1+9wmW4JGGq8MNmY/NOo=, tarball: shebang-command/download/shebang-command-2.0.0.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      shebang-regex: 3.0.0
+    dev: true
+
+  /shebang-regex/3.0.0:
+    resolution: {integrity: sha1-rhbxZE2HPsrYQ7AwexQzYtTEIXI=, tarball: shebang-regex/download/shebang-regex-3.0.0.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /signal-exit/4.1.0:
+    resolution: {integrity: sha1-lSGIwcvVRgcOLdIND0HArgUwywQ=, tarball: signal-exit/download/signal-exit-4.1.0.tgz}
+    engines: {node: '>=14'}
+    dev: true
+
+  /slash/3.0.0:
+    resolution: {integrity: sha1-ZTm+hwwWWtvVJAIg2+Nh8bxNRjQ=, tarball: slash/download/slash-3.0.0.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /sort-object-keys/1.1.3:
+    resolution: {integrity: sha1-v/gz/oXKsUezR0LkWGNFPB4ZC0U=, tarball: sort-object-keys/download/sort-object-keys-1.1.3.tgz}
+    dev: true
+
+  /sort-package-json/2.12.0:
+    resolution: {integrity: sha1-QZahuoK6Y8SlEq3R0AqzkCa/irc=, tarball: sort-package-json/download/sort-package-json-2.12.0.tgz}
+    hasBin: true
+    dependencies:
+      detect-indent: 7.0.1
+      detect-newline: 4.0.1
+      get-stdin: 9.0.0
+      git-hooks-list: 3.1.0
+      is-plain-obj: 4.1.0
+      semver: 7.6.3
+      sort-object-keys: 1.1.3
+      tinyglobby: 0.2.10
+    dev: true
+
+  /spawndamnit/3.0.1:
+    resolution: {integrity: sha1-REECNdPcTiH45PdArjJm5EhsKu0=, tarball: spawndamnit/download/spawndamnit-3.0.1.tgz}
+    dependencies:
+      cross-spawn: 7.0.6
+      signal-exit: 4.1.0
+    dev: true
+
+  /sprintf-js/1.0.3:
+    resolution: {integrity: sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=, tarball: sprintf-js/download/sprintf-js-1.0.3.tgz}
+    dev: true
+
+  /strip-ansi/6.0.1:
+    resolution: {integrity: sha1-nibGPTD1NEPpSJSVshBdN7Z6hdk=, tarball: strip-ansi/download/strip-ansi-6.0.1.tgz}
+    engines: {node: '>=8'}
+    dependencies:
+      ansi-regex: 5.0.1
+    dev: true
+
+  /strip-bom/3.0.0:
+    resolution: {integrity: sha1-IzTBjpx1n3vdVv3vfprj1YjmjtM=, tarball: strip-bom/download/strip-bom-3.0.0.tgz}
+    engines: {node: '>=4'}
+    dev: true
+
+  /synckit/0.9.2:
+    resolution: {integrity: sha1-o6k17KeSLUi559bGGCLubDrk7GI=, tarball: synckit/download/synckit-0.9.2.tgz}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    dependencies:
+      '@pkgr/core': 0.1.1
+      tslib: 2.8.1
+    dev: true
+
+  /term-size/2.2.1:
+    resolution: {integrity: sha1-KmpUhAQywvtjIP6g9BVTHpAYn1Q=, tarball: term-size/download/term-size-2.2.1.tgz}
+    engines: {node: '>=8'}
+    dev: true
+
+  /tinyglobby/0.2.10:
+    resolution: {integrity: sha1-5xLPLcm5Wh9cW70VlyDhWDOXeg8=, tarball: tinyglobby/download/tinyglobby-0.2.10.tgz}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      fdir: 6.4.2_picomatch@4.0.2
+      picomatch: 4.0.2
+    dev: true
+
+  /tmp/0.0.33:
+    resolution: {integrity: sha1-bTQzWIl2jSGyvNoKonfO07G/rfk=, tarball: tmp/download/tmp-0.0.33.tgz}
+    engines: {node: '>=0.6.0'}
+    dependencies:
+      os-tmpdir: 1.0.2
+    dev: true
+
+  /to-regex-range/5.0.1:
+    resolution: {integrity: sha1-FkjESq58jZiKMmAY7XL1tN0DkuQ=, tarball: to-regex-range/download/to-regex-range-5.0.1.tgz}
+    engines: {node: '>=8.0'}
+    dependencies:
+      is-number: 7.0.0
+    dev: true
+
+  /tr46/0.0.3:
+    resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=, tarball: tr46/download/tr46-0.0.3.tgz}
+    dev: false
+
+  /tslib/2.8.1:
+    resolution: {integrity: sha1-YS7+TtI11Wfoq6Xypfq3AoCt6D8=, tarball: tslib/download/tslib-2.8.1.tgz}
+    dev: true
+
+  /typescript/5.7.2:
+    resolution: {integrity: sha1-MWnPjEyKgozeU7qeyz0rHV3We+Y=, tarball: typescript/download/typescript-5.7.2.tgz}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: true
+
+  /undici-types/5.26.5:
+    resolution: {integrity: sha1-vNU5iT0AtW6WT9JlekhmsiGmVhc=, tarball: undici-types/download/undici-types-5.26.5.tgz}
+    dev: false
+
+  /undici-types/6.20.0:
+    resolution: {integrity: sha1-gXG/IsH1iNFVTVW/IEvGJK84hDM=, tarball: undici-types/download/undici-types-6.20.0.tgz}
+
+  /universalify/0.1.2:
+    resolution: {integrity: sha1-tkb2m+OULavOzJ1mOcgNwQXvqmY=, tarball: universalify/download/universalify-0.1.2.tgz}
+    engines: {node: '>= 4.0.0'}
+    dev: true
+
+  /universalify/2.0.1:
+    resolution: {integrity: sha1-Fo78IYCWTmOG0GHglN9hr+I5sY0=, tarball: universalify/download/universalify-2.0.1.tgz}
+    engines: {node: '>= 10.0.0'}
+    dev: false
+
+  /web-streams-polyfill/4.0.0-beta.3:
+    resolution: {integrity: sha1-KJhIa3T1FWCV5HPv6Ync8YUEejg=, tarball: web-streams-polyfill/download/web-streams-polyfill-4.0.0-beta.3.tgz}
+    engines: {node: '>= 14'}
+    dev: false
+
+  /webidl-conversions/3.0.1:
+    resolution: {integrity: sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=, tarball: webidl-conversions/download/webidl-conversions-3.0.1.tgz}
+    dev: false
+
+  /whatwg-url/5.0.0:
+    resolution: {integrity: sha1-lmRU6HZUYuN2RNNib2dCzotwll0=, tarball: whatwg-url/download/whatwg-url-5.0.0.tgz}
+    dependencies:
+      tr46: 0.0.3
+      webidl-conversions: 3.0.1
+    dev: false
+
+  /which/2.0.2:
+    resolution: {integrity: sha1-fGqN0KY2oDJ+ELWckobu6T8/UbE=, tarball: which/download/which-2.0.2.tgz}
+    engines: {node: '>= 8'}
+    hasBin: true
+    dependencies:
+      isexe: 2.0.0
+    dev: true
