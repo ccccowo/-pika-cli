@@ -1,4 +1,5 @@
 import fs from "fs";
+// @ts-ignore
 import fse from "fs-extra";
 import path from "node:path";
 // @ts-ignore
@@ -46,7 +47,7 @@ class NpmPackage {
     });
   }
 
-  // 获取npm包路径
+  // 获取npm包存储路径
   get npmFilePath() {
     return path.resolve(
       this.storePath,

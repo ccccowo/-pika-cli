@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import fs from "fs";
+// @ts-ignore
 import fse from "fs-extra";
 import path from "node:path";
 // @ts-ignore

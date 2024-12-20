@@ -1,6 +1,6 @@
 {
   "name": "@pika-cli/cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publishConfig": {
     "access": "public"
   },
@@ -18,7 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pika-cli/create": "workspace:^0.0.2",
+    "@pika-cli/create": "workspace:^0.0.3",
     "commander": "^12.1.0",
     "fs-extra": "^11.2.0"
   },

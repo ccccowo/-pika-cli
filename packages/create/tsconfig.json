@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "types": [ "node" ],
-    "target": "es2016", 
-    "module": "NodeNext", 
+    "types": ["node"],
+    "target": "es2016",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "declaration": true,
     "esModuleInterop": true,
@@ -11,5 +11,6 @@
     "strict": true,
     "skipLibCheck": true,
     "sourceMap": true
-  }
+  },
+  "include": ["src/**/*"]
 }
