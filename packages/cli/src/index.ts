@@ -14,16 +14,29 @@ program
     .description('脚手架 cli')
     .version(pkgJson.version);
 
-program.command('create')
+    program
+    .command('create')
     .description('创建项目')
     .action(async () => {
-        create();
+      try {
+        await create();
+      } catch (error) {
+        console.error('创建项目失败:', error);
+        process.exit(1);
+      }
     });
-
-program.command('generate')
+  
+  // generate 命令才需要 generate.config.js
+  program
+    .command('generate')
     .description('生成代码')
     .action(async () => {
-        generate();
+      try {
+        await generate();
+      } catch (error) {
+        console.error('生成代码失败:', error);
+        process.exit(1);
+      }
     });
 
 program.parse();

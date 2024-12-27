@@ -68,6 +68,5 @@ function generate() {
         }).process(markdown);
     });
 }
-generate();
 export default generate;
 //# sourceMappingURL=index.js.map

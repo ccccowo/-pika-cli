@@ -73,6 +73,4 @@ async function generate() {
     }).process(markdown);
 }
 
-// generate();
-
 export default generate;

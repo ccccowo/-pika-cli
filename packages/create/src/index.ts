@@ -17,7 +17,7 @@ async function create() {
         choices: [
           {
             name: 'react 项目',
-            value: '@guang-cli/template-react'
+            value: '@pika-cli/template-react-ui-ts'
           },
           {
             name: 'vue 项目',
