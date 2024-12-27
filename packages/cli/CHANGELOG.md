@@ -1,5 +1,16 @@
 # @pika-cli/cli
 
+## 0.1.0
+
+### Minor Changes
+
+- 增加generate命令
+
+### Patch Changes
+
+- Updated dependencies
+  - @pika-cli/generate@0.1.0
+
 ## 0.0.4
 
 ### Patch Changes

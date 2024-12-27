@@ -1,16 +1,16 @@
 {
   "name": "@pika-cli/cli",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
-  "description": "",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "pika-cli": "./dist/index.js"
   },
+  "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,7 +18,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pika-cli/create": "workspace:^0.1.0",
+    "@pika-cli/create": "workspace:^",
+    "@pika-cli/generate": "workspace:^",
     "commander": "^12.1.0",
     "fs-extra": "^11.2.0"
   },

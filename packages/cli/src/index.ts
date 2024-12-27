@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import create from '@pika-cli/create';
+import generate from '@pika-cli/generate'
 import { Command } from 'commander';
 import fse from 'fs-extra';
 import path from 'node:path';
@@ -17,6 +18,12 @@ program.command('create')
     .description('创建项目')
     .action(async () => {
         create();
+    });
+
+program.command('generate')
+    .description('生成代码')
+    .action(async () => {
+        generate();
     });
 
 program.parse();
