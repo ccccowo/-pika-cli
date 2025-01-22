@@ -1,5 +1,11 @@
 # @pika-cli/create
 
+## 0.2.0
+
+### Minor Changes
+
+- 添加创建github仓库功能
+
 ## 0.1.1
 
 ### Patch Changes
