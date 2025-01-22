@@ -9,6 +9,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

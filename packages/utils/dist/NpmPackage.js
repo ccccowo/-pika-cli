@@ -50,7 +50,7 @@ class NpmPackage {
             });
         });
     }
-    // 获取npm包路径
+    // 获取npm包存储路径
     get npmFilePath() {
         return path.resolve(this.storePath, `.store/${this.name.replace("/", "+")}@${this.version}/node_modules/${this.name}`);
     }
