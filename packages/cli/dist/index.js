@@ -31,6 +31,21 @@ program
         process.exit(1);
     }
 }));
+program
+    .command('github')
+    .description('创建 GitHub 仓库并关联本地项目')
+    .option('-p, --private', '是否为私有仓库')
+    .option('-d, --description <description>', '仓库描述')
+    .action((options) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { initGithubRepo } = yield import('@pika-cli/github');
+        yield initGithubRepo(options);
+    }
+    catch (error) {
+        console.error('GitHub 仓库操作失败:', error);
+        process.exit(1);
+    }
+}));
 // generate 命令才需要 generate.config.js
 program
     .command('generate')

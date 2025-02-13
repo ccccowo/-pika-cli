@@ -16,7 +16,8 @@
     "dev": "tsc -w",
     "test": "node ./dist/index.js",
     "test:create": "node ./dist/index.js create",
-    "test:generate": "node ./dist/index.js generate"
+    "test:generate": "node ./dist/index.js generate",
+    "test:github": "node ./dist/index.js github"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,7 @@
   "dependencies": {
     "@pika-cli/create": "workspace:^",
     "@pika-cli/generate": "workspace:^",
+    "@pika-cli/github": "workspace:^",
     "commander": "^12.1.0",
     "fs-extra": "^11.2.0"
   },

@@ -19,15 +19,45 @@ program
     .name('pika-cli')
     .description('脚手架 cli')
     .version(pkgJson.version);
-program.command('create')
+program
+    .command('create')
     .description('创建项目')
     .action(() => __awaiter(void 0, void 0, void 0, function* () {
-    create();
+    try {
+        yield create();
+    }
+    catch (error) {
+        console.error('创建项目失败:', error);
+        process.exit(1);
+    }
 }));
-program.command('generate')
+program
+    .command('github')
+    .description('创建 GitHub 仓库并关联本地项目')
+    .option('-p, --private', '是否为私有仓库')
+    .option('-d, --description <description>', '仓库描述')
+    .action((options) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { initGithubRepo } = yield import('@pika-cli/github');
+        yield initGithubRepo(options);
+    }
+    catch (error) {
+        console.error('GitHub 仓库操作失败:', error);
+        process.exit(1);
+    }
+}));
+// generate 命令才需要 generate.config.js
+program
+    .command('generate')
     .description('生成代码')
     .action(() => __awaiter(void 0, void 0, void 0, function* () {
-    generate();
+    try {
+        yield generate();
+    }
+    catch (error) {
+        console.error('生成代码失败:', error);
+        process.exit(1);
+    }
 }));
 program.parse();
 //# sourceMappingURL=index.js.map
