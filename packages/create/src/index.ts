@@ -8,110 +8,100 @@ import fse from "fs-extra";
 import { glob } from "glob";
 import ejs from "ejs";
 
-async function create() {
-    // 选择项目模版
-    const projectTemplate = await select({
-        message: '请选择项目模版',
-        choices: [
-          {
-            name: 'react 项目',
-            value: '@pika-cli/template-react-ui-ts'
-          },
-          {
-            name: 'vue 项目',
-            value: '@guang-cli/template-vue'
-          }
-        ],
-    });
+interface CreateOptions {
+  template?: string;
+  name?: string;
+  targetPath?: string;
+}
 
-    // 输入项目名
-    let projectName = '';
-    while(!projectName) {
-        projectName = await input({ message: '请输入项目名' });
-    }
+// API 模式：直接使用传入的参数创建项目
+async function createWithOptions(options: CreateOptions) {
+  const { template, name, targetPath = process.cwd() } = options;
+  if (!template || !name) {
+    throw new Error('template 和 name 是必需的');
+  }
 
-    // 检查项目目录是否存在
-    const targetPath = path.join(process.cwd(), projectName);
-    if(fse.existsSync(targetPath)) {
-        const empty = await select({
-            message: '该目录不为空，是否清空',
-            choices: [
-                {
-                    name: '是',
-                    value: true
-                },
-                {
-                    name: '否', 
-                    value: false
-                }
-            ]
-        });
-        if(empty) {
-            fse.emptyDirSync(targetPath);
-        } else {
-            process.exit(0);
-        }
-    }
+  // 检查项目目录是否存在
+  const projectPath = path.join(targetPath, name);
+  if(fse.existsSync(projectPath)) {
+    fse.emptyDirSync(projectPath);
+  }
 
-    // 下载/更新模版
-    const pkg = new NpmPackage({
-        name: projectTemplate,
-        targetPath: path.join(os.homedir(), '.guang-cli-template')
-    });
+  // 下载/更新模版
+  const pkg = new NpmPackage({
+    name: template,
+    targetPath: path.join(os.homedir(), '.guang-cli-template')
+  });
 
+  const spinner = ora('处理模板中...').start();
+  try {
     if (!await pkg.exists()) {
-        const spinner = ora('下载模版中...').start();
-        await pkg.install();
-        spinner.stop();
+      await pkg.install();
     } else {
-        const spinner = ora('更新模版中...').start();
-        await pkg.update();
-        spinner.stop();
+      await pkg.update();
     }
-    const spinner = ora('创建项目中...').start();
 
     // 将模版复制到项目目录
     const templatePath = path.join(pkg.npmFilePath, 'template');
-    fse.copySync(templatePath, targetPath);
-    spinner.stop();
+    fse.copySync(templatePath, projectPath);
 
     // 渲染ejs模版文件
-    const renderData: Record<string, any> = { projectName };
-    const deleteFiles: string[] = [];
-    const questionConfigPath = path.join(pkg.npmFilePath, 'questions.json');
-    // 选择是否启用某些配置
-    if(fse.existsSync(questionConfigPath)) {
-        const config = fse.readJSONSync(questionConfigPath);
-        for (let key in config) {
-            const res = await confirm({ message: '是否启用 ' + key });
-            renderData[key] = res;
-            if (!res) {
-                deleteFiles.push(...config[key].files)
-            }
-        }
-    }
+    const renderData = { projectName: name };
     const files = await glob('**', {
-        cwd: targetPath,
-        nodir: true,
-        ignore: 'node_modules/**'
-    })
-    for (let i = 0; i< files.length; i++) {
-        const filePath = path.join(targetPath, files[i]);
-        const renderResult = await ejs.renderFile(filePath, renderData)
-        fse.writeFileSync(filePath, renderResult);
+      cwd: projectPath,
+      nodir: true,
+      ignore: 'node_modules/**'
+    });
+
+    for (const file of files) {
+      const filePath = path.join(projectPath, file);
+      const renderResult = await ejs.renderFile(filePath, renderData);
+      fse.writeFileSync(filePath, renderResult);
     }
 
-    // 删除临时目录的模版
-    deleteFiles.forEach(item => {
-        fse.removeSync(path.join(targetPath, item));
-    })
+    spinner.succeed('项目创建成功');
+    return { path: projectPath };
+  } catch (error) {
+    spinner.fail('项目创建失败');
+    throw error;
+  }
+}
 
-    console.log(`\n✨ 本地项目创建成功： ${targetPath}`);
-    console.log('现在你可以：');
-    console.log(`  cd ${projectName}`);
-    console.log('  pnpm install');
-    console.log('  pnpm dev');
-    console.log('  pika github    # 创建 GitHub 仓库\n');
+// CLI 模式：通过命令行交互获取参数
+async function createWithPrompts() {
+  // 选择项目模版
+  const projectTemplate = await select({
+    message: '请选择项目模版',
+    choices: [
+      {
+        name: 'react 项目',
+        value: '@pika-cli/template-react-ui-ts'
+      },
+      {
+        name: 'vue 项目',
+        value: '@guang-cli/template-vue'
+      }
+    ],
+  });
+
+  // 输入项目名
+  let projectName = '';
+  while(!projectName) {
+    projectName = await input({ message: '请输入项目名' });
+  }
+
+  return createWithOptions({
+    template: projectTemplate,
+    name: projectName
+  });
+}
+
+// 统一入口：根据是否传入参数决定使用哪种模式
+async function create(options?: CreateOptions) {
+  if (options?.template && options?.name) {
+    return createWithOptions(options);
+  }
+  return createWithPrompts();
 }
 
 export default create;

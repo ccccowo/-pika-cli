@@ -14,8 +14,17 @@ interface CreateGithubRepoOptions {
 }
 
 interface InitGithubRepoOptions {
+  token?: string;
   private?: boolean;
   description?: string;
+  projectPath?: string;
+  projectName?: string;
+}
+
+interface GithubResult {
+  success: boolean;
+  error?: string;
+  repoUrl?: string;
 }
 
 const CONFIG_DIR = path.join(os.homedir(), '.pika-cli');
@@ -98,18 +107,39 @@ function initGitRepository(dirPath: string) {
   }
 }
 
-async function getGithubToken(): Promise<string> {
+// API 模式：使用传入的 token
+async function getGithubTokenWithOptions(token?: string): Promise<string> {
+  if (token) {
+    const isValid = await validateToken(token);
+    if (isValid) {
+      return token;
+    }
+    throw new Error('无效的 GitHub Token');
+  }
+
+  // 尝试使用保存的 token
+  const savedToken = loadToken();
+  if (savedToken) {
+    const isValid = await validateToken(savedToken);
+    if (isValid) {
+      return savedToken;
+    }
+    removeToken();
+  }
+
+  throw new Error('未提供有效的 GitHub Token');
+}
+
+// CLI 模式：通过命令行交互获取 token
+async function getGithubTokenWithPrompts(): Promise<string> {
   // 先尝试读取已保存的 token
   const savedToken = loadToken();
   if (savedToken) {
-    // 验证已保存的 token 是否有效
     if (await validateToken(savedToken)) {
       return savedToken;
-    } else {
-      // token 无效，删除它
-      removeToken();
-      console.log('❌ 已保存的 GitHub Token 已过期，请重新输入');
     }
+    removeToken();
+    console.log('❌ 已保存的 GitHub Token 已过期，请重新输入');
   }
 
   console.log('\n关于 GitHub Token:');
@@ -180,13 +210,8 @@ async function getGithubToken(): Promise<string> {
   return token;
 }
 
-export async function createGithubRepo({
-  token,
-  projectName,
-  projectPath,
-  description = '',
-  isPrivate = false,
-}: CreateGithubRepoOptions) {
+// API 模式：直接使用传入的参数创建仓库
+async function createGithubRepoWithOptions(options: CreateGithubRepoOptions): Promise<GithubResult> {
   if (!checkGitEnvironment()) {
     return {
       success: false,
@@ -196,25 +221,25 @@ export async function createGithubRepo({
 
   try {
     const octokit = new Octokit({
-      auth: token,
+      auth: options.token,
     });
 
     const { data } = await octokit.repos.createForAuthenticatedUser({
-      name: projectName,
-      description,
-      private: isPrivate,
+      name: options.projectName,
+      description: options.description,
+      private: options.isPrivate,
     });
 
     const sshUrl = data.ssh_url;
 
     // 初始化或重置 Git 仓库
-    if (!isGitRepository(projectPath)) {
-      initGitRepository(projectPath);
+    if (!isGitRepository(options.projectPath)) {
+      initGitRepository(options.projectPath);
     }
 
     // 如果已经有远程仓库，先删除它
-    if (hasRemoteOrigin(projectPath)) {
-      execSync('git remote remove origin', { cwd: projectPath, stdio: 'inherit' });
+    if (hasRemoteOrigin(options.projectPath)) {
+      execSync('git remote remove origin', { cwd: options.projectPath, stdio: 'inherit' });
     }
 
     const commands = [
@@ -227,7 +252,7 @@ export async function createGithubRepo({
 
     commands.forEach(cmd => {
       execSync(cmd, { 
-        cwd: projectPath,
+        cwd: options.projectPath,
         stdio: 'inherit' 
       });
     });
@@ -245,16 +270,19 @@ export async function createGithubRepo({
   }
 }
 
-export async function initGithubRepo(options: InitGithubRepoOptions) {
+// CLI 模式：通过命令行交互创建仓库
+async function createGithubRepoWithPrompts(options: InitGithubRepoOptions): Promise<GithubResult> {
   // 1. 检查 Git 环境
   if (!checkGitEnvironment()) {
-    console.error('请先安装 Git');
-    process.exit(1);
+    return {
+      success: false,
+      error: '请先安装 Git'
+    };
   }
 
   // 2. 获取项目信息
-  const projectPath = process.cwd();
-  const projectName = path.basename(projectPath);
+  const projectPath = options.projectPath || process.cwd();
+  const projectName = options.projectName || path.basename(projectPath);
 
   // 3. 检查是否已有远程仓库
   const hasOrigin = hasRemoteOrigin(projectPath);
@@ -269,28 +297,59 @@ export async function initGithubRepo(options: InitGithubRepoOptions) {
     });
 
     if (!override) {
-      console.log('已取消操作');
-      process.exit(0);
+      return {
+        success: false,
+        error: '用户取消操作'
+      };
     }
   }
 
   // 4. 获取 GitHub Token
-  const token = await getGithubToken();
+  let token: string;
+  try {
+    token = await getGithubTokenWithPrompts();
+  } catch (error) {
+    return {
+      success: false,
+      error: '获取 Token 失败'
+    };
+  }
 
   // 5. 创建并关联仓库
-  const result = await createGithubRepo({
+  return createGithubRepoWithOptions({
     token,
     projectName,
     projectPath,
-    description: options.description || '',
-    isPrivate: options.private || false
+    description: options.description,
+    isPrivate: options.private
   });
+}
 
-  if (result.success) {
-    console.log(`\n✨ GitHub 仓库创建成功：${result.repoUrl}`);
-  } else {
-    console.error(`\n❌ GitHub 仓库创建失败：${result.error}`);
-    process.exit(1);
+// 统一入口：根据是否传入 token 决定使用哪种模式
+export async function initGithubRepo(options: InitGithubRepoOptions = {}): Promise<GithubResult> {
+  try {
+    if (options.token) {
+      // API 模式
+      const token = await getGithubTokenWithOptions(options.token);
+      const projectPath = options.projectPath || process.cwd();
+      const projectName = options.projectName || path.basename(projectPath);
+      
+      return createGithubRepoWithOptions({
+        token,
+        projectName,
+        projectPath,
+        description: options.description,
+        isPrivate: options.private
+      });
+    } else {
+      // CLI 模式
+      return createGithubRepoWithPrompts(options);
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '创建 GitHub 仓库失败'
+    };
   }
 }
 

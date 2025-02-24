@@ -1,6 +1,6 @@
 {
   "name": "@pika-cli/cli",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "publishConfig": {
     "access": "public"
   },
@@ -14,7 +14,6 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "test": "node ./dist/index.js",
     "test:create": "node ./dist/index.js create",
     "test:generate": "node ./dist/index.js generate",
     "test:github": "node ./dist/index.js github"
@@ -30,6 +29,7 @@
     "fs-extra": "^11.2.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^11.0.4"
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.5"
   }
 }
