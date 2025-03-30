@@ -8,56 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { select, input } from "@inquirer/prompts";
-import os from "node:os";
-import { NpmPackage } from "@pika-cli/utils";
 import path from "node:path";
 import ora from "ora";
-// @ts-ignore
-import fse from "fs-extra";
-import { glob } from "glob";
-import ejs from "ejs";
+import { executeInteractiveCommand } from "./utils/interactive.js";
+import { parseScaffoldCommand } from "./utils/command.js";
 // API 模式：直接使用传入的参数创建项目
 function createWithOptions(options) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { template, name, targetPath = process.cwd() } = options;
-        if (!template || !name) {
-            throw new Error('template 和 name 是必需的');
-        }
-        // 检查项目目录是否存在
-        const projectPath = path.join(targetPath, name);
-        if (fse.existsSync(projectPath)) {
-            fse.emptyDirSync(projectPath);
-        }
-        // 下载/更新模版
-        const pkg = new NpmPackage({
-            name: template,
-            targetPath: path.join(os.homedir(), '.guang-cli-template')
-        });
-        const spinner = ora('处理模板中...').start();
+        const { scaffold, name, targetPath, framework, variant } = options;
+        const spinner = ora('创建项目中...').start();
         try {
-            if (!(yield pkg.exists())) {
-                yield pkg.install();
-            }
-            else {
-                yield pkg.update();
-            }
-            // 将模版复制到项目目录
-            const templatePath = path.join(pkg.npmFilePath, 'template');
-            fse.copySync(templatePath, projectPath);
-            // 渲染ejs模版文件
-            const renderData = { projectName: name };
-            const files = yield glob('**', {
-                cwd: projectPath,
-                nodir: true,
-                ignore: 'node_modules/**'
-            });
-            for (const file of files) {
-                const filePath = path.join(projectPath, file);
-                const renderResult = yield ejs.renderFile(filePath, renderData);
-                fse.writeFileSync(filePath, renderResult);
+            // 获取命令配置
+            const commandConfig = parseScaffoldCommand(scaffold, framework, variant);
+            // 使用交互式命令创建项目
+            const success = yield executeInteractiveCommand(Object.assign(Object.assign({ scaffold }, commandConfig), { projectName: name, projectPath: targetPath }));
+            if (!success) {
+                throw new Error('项目创建失败');
             }
             spinner.succeed('项目创建成功');
-            return { path: projectPath };
+            return { path: path.join(targetPath, name) };
         }
         catch (error) {
             spinner.fail('项目创建失败');
@@ -68,35 +37,63 @@ function createWithOptions(options) {
 // CLI 模式：通过命令行交互获取参数
 function createWithPrompts() {
     return __awaiter(this, void 0, void 0, function* () {
-        // 选择项目模版
-        const projectTemplate = yield select({
-            message: '请选择项目模版',
+        // 选择脚手架
+        const scaffold = yield select({
+            message: '请选择脚手架',
             choices: [
                 {
-                    name: 'react 项目',
-                    value: '@pika-cli/template-react-ui-ts'
+                    name: 'Vite',
+                    value: 'vite'
                 },
                 {
-                    name: 'vue 项目',
-                    value: '@guang-cli/template-vue'
+                    name: 'Next.js',
+                    value: 'next'
                 }
             ],
         });
+        // 如果选择了 Vite，还需要选择框架和变体
+        let framework;
+        let variant;
+        if (scaffold === 'vite') {
+            framework = yield select({
+                message: '请选择框架',
+                choices: [
+                    { name: 'React', value: 'react' },
+                    { name: 'Vue', value: 'vue' },
+                    { name: 'Svelte', value: 'svelte' }
+                ]
+            });
+            variant = yield select({
+                message: '请选择变体',
+                choices: [
+                    { name: 'TypeScript', value: 'typescript' },
+                    { name: 'JavaScript', value: 'javascript' }
+                ]
+            });
+        }
         // 输入项目名
         let projectName = '';
         while (!projectName) {
             projectName = yield input({ message: '请输入项目名' });
         }
+        // 输入项目路径
+        const projectPath = yield input({
+            message: '请输入项目路径',
+            default: process.cwd()
+        });
         return createWithOptions({
-            template: projectTemplate,
-            name: projectName
+            scaffold,
+            name: projectName,
+            targetPath: projectPath,
+            framework,
+            variant
         });
     });
 }
 // 统一入口：根据是否传入参数决定使用哪种模式
 function create(options) {
     return __awaiter(this, void 0, void 0, function* () {
-        if ((options === null || options === void 0 ? void 0 : options.template) && (options === null || options === void 0 ? void 0 : options.name)) {
+        if ((options === null || options === void 0 ? void 0 : options.scaffold) && (options === null || options === void 0 ? void 0 : options.name) && (options === null || options === void 0 ? void 0 : options.targetPath)) {
             return createWithOptions(options);
         }
         return createWithPrompts();

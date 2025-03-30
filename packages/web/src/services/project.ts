@@ -1,29 +1,93 @@
-import create from '@pika-cli/create';
-import { initGithubRepo } from '@pika-cli/github';
-import { templates } from '../config/templates';
-import type { ProjectOptions, CreateResult } from '../types';
+import type { ProjectOptions } from '../types';
+
+const API_BASE_URL = 'http://localhost:3000/api';
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+
+async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_RETRIES): Promise<Response> {
+  try {
+    const response = await fetch(url, {
+      ...options,
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return response;
+  } catch (error) {
+    if (retries > 0) {
+      console.log(`重试请求 (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})...`);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
+  }
+}
+
+export interface CreateResult {
+  success: boolean;
+  error?: string;
+  localPath: string;
+  projectName: string;
+  framework: string;
+  variant: string;
+  nextSteps: string[];
+}
+
+// 选择文件夹 - 直接返回输入的路径
+export async function selectFolder(): Promise<string> {
+  try {
+    const handle = await window.showDirectoryPicker({
+      mode: 'readwrite'
+    });
+    return handle.name;
+  } catch (error) {
+    console.error('选择文件夹失败:', error);
+    throw new Error('选择文件夹失败');
+  }
+}
 
 // 创建本地项目
 export async function createLocalProject(options: ProjectOptions): Promise<CreateResult> {
   try {
-    // 查找对应的模板配置
-    const template = templates.find(t => t.id === options.template);
-    if (!template) {
-      throw new Error('未找到对应的项目模板');
-    }
-
-    // 返回创建命令和项目路径
-    const command = template.command.replace('{name}', options.name);
+    const { default: create } = await import('@pika-cli/create');
     
+    // 使用 create 方法创建项目
+    const result = await create({
+      scaffold: options.scaffold,
+      name: options.name,
+      targetPath: options.projectPath,
+      framework: options.framework,
+      variant: options.variant
+    });
+
     return {
       success: true,
-      localPath: `./${options.name}`,
-      command // 返回命令给前端展示
+      localPath: result.path,
+      projectName: options.name,
+      framework: options.framework || 'react',
+      variant: options.variant || 'typescript',
+      nextSteps: [
+        `cd ${options.name}`,
+        'pnpm install',
+        'pnpm run dev'
+      ]
     };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : '创建本地项目失败'
+      error: error instanceof Error ? error.message : '创建本地项目失败',
+      localPath: '',
+      projectName: options.name,
+      framework: options.framework || 'react',
+      variant: options.variant || 'typescript',
+      nextSteps: []
     };
   }
 }
@@ -31,22 +95,17 @@ export async function createLocalProject(options: ProjectOptions): Promise<Creat
 // 创建 GitHub 仓库
 export async function createGithubRepo(options: ProjectOptions): Promise<CreateResult> {
   try {
-    const result = await initGithubRepo({
-      token: options.token,
-      projectName: options.name,
-      projectPath: options.localPath,
-      private: options.isPrivate,
-      description: options.description
-    });
-    
-    return {
-      success: true,
-      repoUrl: result.repoUrl
-    };
+    // TODO: 实现 GitHub 仓库创建功能
+    throw new Error('GitHub 仓库创建功能暂未实现');
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : '创建 GitHub 仓库失败'
+      error: error instanceof Error ? error.message : '创建 GitHub 仓库失败',
+      localPath: '',
+      projectName: options.name,
+      framework: options.framework || 'react',
+      variant: options.variant || 'typescript',
+      nextSteps: []
     };
   }
 }
@@ -54,44 +113,31 @@ export async function createGithubRepo(options: ProjectOptions): Promise<CreateR
 // 创建项目（根据选项决定创建类型）
 export async function createProject(options: ProjectOptions): Promise<CreateResult> {
   try {
-    switch (options.createType) {
-      case 'local': {
-        return await createLocalProject(options);
-      }
-      case 'github': {
-        return await createGithubRepo(options);
-      }
-      case 'both': {
-        const localResult = await createLocalProject(options);
-        if (!localResult.success) {
-          return localResult;
-        }
-        
-        const githubResult = await createGithubRepo({
-          ...options,
-          localPath: localResult.localPath
-        });
+    const response = await fetchWithRetry(`${API_BASE_URL}/project/create`, {
+      method: 'POST',
+      body: JSON.stringify(options),
+    });
 
-        if (!githubResult.success) {
-          return {
-            ...githubResult,
-            localPath: localResult.localPath
-          };
-        }
-        
-        return {
-          success: true,
-          localPath: localResult.localPath,
-          repoUrl: githubResult.repoUrl
-        };
-      }
-      default:
-        throw new Error('无效的创建类型');
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.error || '创建项目失败');
     }
-  } catch (error) {
+
     return {
-      success: false,
-      error: error instanceof Error ? error.message : '创建项目失败'
+      success: true,
+      localPath: result.localPath,
+      projectName: result.projectName || options.name,
+      framework: result.framework || options.framework || '',
+      variant: result.variant || options.variant || '',
+      nextSteps: result.nextSteps || [
+        `cd ${options.name}`,
+        'pnpm install',
+        'pnpm run dev'
+      ]
     };
+  } catch (error) {
+    console.error('创建项目失败:', error);
+    throw new Error(error instanceof Error ? error.message : '服务器连接失败，请检查服务器是否正常运行');
   }
 } 

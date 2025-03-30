@@ -1,66 +1,40 @@
-import { select, input, confirm } from "@inquirer/prompts";
-import os from "node:os";
-import { NpmPackage } from "@pika-cli/utils";
+import { select, input } from "@inquirer/prompts";
 import path from "node:path";
 import ora from "ora";
-// @ts-ignore
-import fse from "fs-extra";
-import { glob } from "glob";
-import ejs from "ejs";
+import { executeInteractiveCommand } from "./utils/interactive.js";
+import { parseScaffoldCommand, type Scaffold } from "./utils/command.js";
 
 interface CreateOptions {
-  template?: string;
-  name?: string;
-  targetPath?: string;
+  scaffold: Scaffold;
+  name: string;
+  targetPath: string;
+  framework?: string;
+  variant?: string;
 }
 
 // API 模式：直接使用传入的参数创建项目
 async function createWithOptions(options: CreateOptions) {
-  const { template, name, targetPath = process.cwd() } = options;
-  if (!template || !name) {
-    throw new Error('template 和 name 是必需的');
-  }
+  const { scaffold, name, targetPath, framework, variant } = options;
 
-  // 检查项目目录是否存在
-  const projectPath = path.join(targetPath, name);
-  if(fse.existsSync(projectPath)) {
-    fse.emptyDirSync(projectPath);
-  }
-
-  // 下载/更新模版
-  const pkg = new NpmPackage({
-    name: template,
-    targetPath: path.join(os.homedir(), '.guang-cli-template')
-  });
-
-  const spinner = ora('处理模板中...').start();
+  const spinner = ora('创建项目中...').start();
   try {
-    if (!await pkg.exists()) {
-      await pkg.install();
-    } else {
-      await pkg.update();
-    }
-
-    // 将模版复制到项目目录
-    const templatePath = path.join(pkg.npmFilePath, 'template');
-    fse.copySync(templatePath, projectPath);
-
-    // 渲染ejs模版文件
-    const renderData = { projectName: name };
-    const files = await glob('**', {
-      cwd: projectPath,
-      nodir: true,
-      ignore: 'node_modules/**'
+    // 获取命令配置
+    const commandConfig = parseScaffoldCommand(scaffold, framework, variant);
+    
+    // 使用交互式命令创建项目
+    const success = await executeInteractiveCommand({
+      scaffold,
+      ...commandConfig,
+      projectName: name,
+      projectPath: targetPath
     });
 
-    for (const file of files) {
-      const filePath = path.join(projectPath, file);
-      const renderResult = await ejs.renderFile(filePath, renderData);
-      fse.writeFileSync(filePath, renderResult);
+    if (!success) {
+      throw new Error('项目创建失败');
     }
 
     spinner.succeed('项目创建成功');
-    return { path: projectPath };
+    return { path: path.join(targetPath, name) };
   } catch (error) {
     spinner.fail('项目创建失败');
     throw error;
@@ -69,20 +43,43 @@ async function createWithOptions(options: CreateOptions) {
 
 // CLI 模式：通过命令行交互获取参数
 async function createWithPrompts() {
-  // 选择项目模版
-  const projectTemplate = await select({
-    message: '请选择项目模版',
+  // 选择脚手架
+  const scaffold = await select<Scaffold>({
+    message: '请选择脚手架',
     choices: [
       {
-        name: 'react 项目',
-        value: '@pika-cli/template-react-ui-ts'
+        name: 'Vite',
+        value: 'vite'
       },
       {
-        name: 'vue 项目',
-        value: '@guang-cli/template-vue'
+        name: 'Next.js',
+        value: 'next'
       }
     ],
   });
+
+  // 如果选择了 Vite，还需要选择框架和变体
+  let framework: string | undefined;
+  let variant: string | undefined;
+
+  if (scaffold === 'vite') {
+    framework = await select({
+      message: '请选择框架',
+      choices: [
+        { name: 'React', value: 'react' },
+        { name: 'Vue', value: 'vue' },
+        { name: 'Svelte', value: 'svelte' }
+      ]
+    });
+
+    variant = await select({
+      message: '请选择变体',
+      choices: [
+        { name: 'TypeScript', value: 'typescript' },
+        { name: 'JavaScript', value: 'javascript' }
+      ]
+    });
+  }
 
   // 输入项目名
   let projectName = '';
@@ -90,15 +87,24 @@ async function createWithPrompts() {
     projectName = await input({ message: '请输入项目名' });
   }
 
+  // 输入项目路径
+  const projectPath = await input({ 
+    message: '请输入项目路径',
+    default: process.cwd()
+  });
+
   return createWithOptions({
-    template: projectTemplate,
-    name: projectName
+    scaffold,
+    name: projectName,
+    targetPath: projectPath,
+    framework,
+    variant
   });
 }
 
 // 统一入口：根据是否传入参数决定使用哪种模式
 async function create(options?: CreateOptions) {
-  if (options?.template && options?.name) {
+  if (options?.scaffold && options?.name && options?.targetPath) {
     return createWithOptions(options);
   }
   return createWithPrompts();

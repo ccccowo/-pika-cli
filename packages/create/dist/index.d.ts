@@ -1,7 +1,10 @@
+import { type Scaffold } from "./utils/command.js";
 interface CreateOptions {
-    template?: string;
-    name?: string;
-    targetPath?: string;
+    scaffold: Scaffold;
+    name: string;
+    targetPath: string;
+    framework?: string;
+    variant?: string;
 }
 declare function create(options?: CreateOptions): Promise<{
     path: string;
