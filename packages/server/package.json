@@ -9,12 +9,17 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@octokit/rest": "^20.0.2",
     "@pika-cli/create": "workspace:^",
     "@pika-cli/github": "workspace:^",
     "@pika-cli/types": "workspace:^",
+    "@prisma/client": "^6.16.1",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^4.18.3",
-    "morgan": "^1.10.0"
+    "express-session": "^1.18.2",
+    "morgan": "^1.10.0",
+    "zod": "^4.1.8"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -24,4 +29,4 @@
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"
   }
-} 
+}

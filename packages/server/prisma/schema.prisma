@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  tokens       GithubToken[]
+  repos        RepoRecord[]
+}
+
+model GithubToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String   // 前端自定义标识，比如“个人主 Token”
+  tokenEnc  String   // 加密后的 token
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RepoRecord {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  provider    String   // 'github'
+  name        String
+  description String?
+  isPrivate   Boolean  @default(false)
+  htmlUrl     String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+

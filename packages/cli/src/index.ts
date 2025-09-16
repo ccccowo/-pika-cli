@@ -42,16 +42,16 @@ program
     });
 
 // generate 命令才需要 generate.config.js
-program
-    .command('generate')
-    .description('生成代码')
-    .action(async () => {
-        try {
-            await generate();
-        } catch (error) {
-            console.error('生成代码失败:', error);
-            process.exit(1);
-        }
-    });
+// program
+//     .command('generate')
+//     .description('生成代码')
+//     .action(async () => {
+//         try {
+//             await generate();
+//         } catch (error) {
+//             console.error('生成代码失败:', error);
+//             process.exit(1);
+//         }
+//     });
 
 program.parse();

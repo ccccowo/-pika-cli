@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import { router as projectRouter } from './routes/project.js';
+import session from 'express-session';
+import { router as authRouter } from './routes/auth.js';
+import { router as tokenRouter } from './routes/tokens.js';
+import { router as repoRouter } from './routes/repos.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,6 +22,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(session({
+  name: 'pika.sid',
+  secret: process.env.SESSION_SECRET || 'dev-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax'
+  }
+}));
 
 // 健康检查
 app.get('/health', (req, res) => {
@@ -26,6 +40,9 @@ app.get('/health', (req, res) => {
 
 // 路由
 app.use('/api/project', projectRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/tokens', tokenRouter);
+app.use('/api/repos', repoRouter);
 
 // 404处理
 app.use((req, res) => {
