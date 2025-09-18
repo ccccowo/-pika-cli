@@ -103,12 +103,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+interface ProjectSuccessInfo {
+  projectName: string;
+  repoUrl: string;
+  nextSteps: string[];
+  createdAt?: string;
+}
+
 interface TemplateListProps {
   onSelect?: (templateId: TemplateId) => void;
   selectedId?: string;
+  onProjectCreated?: (projectInfo: ProjectSuccessInfo) => void;
 }
 
-export function TemplateList({ onSelect, selectedId }: TemplateListProps) {
+export function TemplateList({ onSelect, selectedId, onProjectCreated }: TemplateListProps) {
   const [currentTab, setCurrentTab] = React.useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateConfig | null>(null);
   const theme = useTheme();
@@ -182,33 +190,37 @@ export function TemplateList({ onSelect, selectedId }: TemplateListProps) {
                           </Box>
                         </Box>
 
-                        <Box display="flex" flexWrap="wrap" mb={3}>
-                          {template.features.map((feature) => (
-                            <Chip
-                              key={feature}
-                              label={feature}
-                              variant="outlined"
-                              size="small"
-                              className={classes.featureChip}
-                            />
-                          ))}
-                        </Box>
-
-                        <Paper variant="outlined" className={classes.commandPaper}>
-                          <Box display="flex" alignItems="center" mb={1}>
-                            <TerminalIcon fontSize="small" style={{ opacity: 0.7 }} />
-                            <Typography variant="caption" style={{ marginLeft: 8, opacity: 0.7 }}>
-                              安装命令
-                            </Typography>
+                        {Array.isArray((template as any).features) && (template as any).features.length > 0 && (
+                          <Box display="flex" flexWrap="wrap" mb={3}>
+                            {(template as any).features.map((feature: string) => (
+                              <Chip
+                                key={feature}
+                                label={feature}
+                                variant="outlined"
+                                size="small"
+                                className={classes.featureChip}
+                              />
+                            ))}
                           </Box>
-                          <Typography
-                            variant="body2"
-                            component="code"
-                            className={classes.commandText}
-                          >
-                            {template.command.replace('{name}', 'my-app')}
-                          </Typography>
-                        </Paper>
+                        )}
+
+                        {(template as any).command && (
+                          <Paper variant="outlined" className={classes.commandPaper}>
+                            <Box display="flex" alignItems="center" mb={1}>
+                              <TerminalIcon fontSize="small" style={{ opacity: 0.7 }} />
+                              <Typography variant="caption" style={{ marginLeft: 8, opacity: 0.7 }}>
+                                安装命令
+                              </Typography>
+                            </Box>
+                            <Typography
+                              variant="body2"
+                              component="code"
+                              className={classes.commandText}
+                            >
+                              {(template as any).command.replace('{name}', 'my-app')}
+                            </Typography>
+                          </Paper>
+                        )}
                       </CardContent>
                     </Card>
                   ))}
@@ -237,6 +249,7 @@ export function TemplateList({ onSelect, selectedId }: TemplateListProps) {
           open={true}
           onClose={handleDialogClose}
           template={selectedTemplate}
+          onProjectCreated={onProjectCreated}
         />
       )}
     </>

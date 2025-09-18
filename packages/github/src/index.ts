@@ -67,7 +67,7 @@ async function createGithubRepoWithOptions(options: CreateGithubRepoOptions): Pr
   }
 }
 
-// 统一入口：仅 API 模式
+
 export async function initGithubRepo(options: InitGithubRepoOptions): Promise<GithubResult> {
   try {
     const token = await getGithubTokenWithOptions(options.token);
@@ -89,3 +89,41 @@ export async function initGithubRepo(options: InitGithubRepoOptions): Promise<Gi
 }
 
 export { validateToken };
+
+// 使用 GitHub Template Repository 生成新仓库
+interface InitFromTemplateOptions {
+  token: string;
+  projectName: string;
+  templateOwner: string;
+  templateRepo: string;
+  description?: string;
+  private?: boolean;
+  includeAllBranches?: boolean;
+}
+
+export async function initGithubRepoFromTemplate(options: InitFromTemplateOptions): Promise<GithubResult> {
+  try {
+    const token = await getGithubTokenWithOptions(options.token);
+    const name = (options.projectName || '').trim();
+    if (!name) return { success: false, error: '仓库名称不能为空' };
+    if (!options.templateOwner || !options.templateRepo) return { success: false, error: '缺少模板仓库信息' };
+
+    const octokit = new Octokit({ auth: token });
+    const { data } = await octokit.repos.createUsingTemplate({
+      template_owner: options.templateOwner,
+      template_repo: options.templateRepo,
+      name,
+      private: options.private,
+      description: options.description,
+      include_all_branches: options.includeAllBranches ?? false,
+    });
+
+    return { success: true, repoUrl: data.html_url };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '使用模板创建仓库失败';
+    if (typeof message === 'string' && /name already exists/i.test(message)) {
+      return { success: false, error: '同名仓库已存在，请更换名称' };
+    }
+    return { success: false, error: message };
+  }
+}

@@ -33,10 +33,8 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = MAX_R
 export interface CreateResult {
   success: boolean;
   error?: string;
-  localPath: string;
   projectName: string;
-  framework: string;
-  variant: string;
+  repoUrl?: string;
   nextSteps: string[];
 }
 
@@ -53,62 +51,6 @@ export async function selectFolder(): Promise<string> {
   }
 }
 
-// 创建本地项目
-export async function createLocalProject(options: ProjectOptions): Promise<CreateResult> {
-  try {
-    const { default: create } = await import('@pika-cli/create');
-    
-    // 使用 create 方法创建项目
-    const result = await create({
-      scaffold: options.scaffold,
-      name: options.name,
-      targetPath: options.projectPath,
-      framework: options.framework,
-      variant: options.variant
-    });
-
-    return {
-      success: true,
-      localPath: result.path,
-      projectName: options.name,
-      framework: options.framework || 'react',
-      variant: options.variant || 'typescript',
-      nextSteps: [
-        `cd ${options.name}`,
-        'pnpm install',
-        'pnpm run dev'
-      ]
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : '创建本地项目失败',
-      localPath: '',
-      projectName: options.name,
-      framework: options.framework || 'react',
-      variant: options.variant || 'typescript',
-      nextSteps: []
-    };
-  }
-}
-
-// 创建 GitHub 仓库
-export async function createGithubRepo(options: ProjectOptions): Promise<CreateResult> {
-  try {
-    // TODO: 实现 GitHub 仓库创建功能
-    throw new Error('GitHub 仓库创建功能暂未实现');
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : '创建 GitHub 仓库失败',
-      localPath: '',
-      projectName: options.name,
-      framework: options.framework || 'react',
-      variant: options.variant || 'typescript',
-      nextSteps: []
-    };
-  }
-}
 
 // 创建项目（根据选项决定创建类型）
 export async function createProject(options: ProjectOptions): Promise<CreateResult> {
@@ -126,14 +68,13 @@ export async function createProject(options: ProjectOptions): Promise<CreateResu
 
     return {
       success: true,
-      localPath: result.localPath,
       projectName: result.projectName || options.name,
-      framework: result.framework || options.framework || '',
-      variant: result.variant || options.variant || '',
+      repoUrl: result.repoUrl,
       nextSteps: result.nextSteps || [
+        `git clone ${result.repoUrl}`,
         `cd ${options.name}`,
-        'pnpm install',
-        'pnpm run dev'
+        'npm install',
+        'npm run dev'
       ]
     };
   } catch (error) {

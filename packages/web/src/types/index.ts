@@ -1,12 +1,5 @@
 // 模板 ID 类型
-export type TemplateId = 
-  | 'vite-react-ts'
-  | 'vite-vue-ts'
-  | 'vite-svelte-ts'
-  | 'next-default'
-  | 'next-dashboard'
-  | 'nuxt-default'
-  | 'remix-default';
+export type TemplateId = 'vite-react-ts' | 'vite-vue-ts';
 
 // 脚手架 ID 类型
 export type ScaffoldId = 'vite' | 'next';
@@ -16,10 +9,9 @@ export interface TemplateConfig {
   id: string;
   name: string;
   description: string;
-  features: string[];
-  command: string;
   scaffold: string;
-  createCommand: string;
+  templateOwner: string;
+  templateRepo: string;
 }
 
 // 脚手架配置
@@ -35,13 +27,11 @@ export interface ScaffoldConfig {
 export interface ProjectOptions {
   scaffold: ScaffoldId;
   name: string;
-  projectPath: string;
-  framework?: string;
-  variant?: string;
+  templateOwner: string;
+  templateRepo: string;
   description?: string;
   isPrivate?: boolean;
   token?: string;
-  localPath?: string;
   createGithub?: boolean;
 }
 

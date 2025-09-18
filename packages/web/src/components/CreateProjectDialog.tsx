@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -14,23 +14,12 @@ import {
   fade,
   Snackbar,
   useTheme,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Link,
 } from '@material-ui/core';
-import type { ProjectOptions, ScaffoldId } from '../types';
-import { createProject, selectFolder } from '../services/project';
+import type { ProjectOptions, ScaffoldId, TemplateConfig } from '../types';
+import { createProject } from '../services/project';
+import { scaffolds } from '../config/templates';
 
-// 添加 FileSystem API 类型声明
-declare global {
-  interface Window {
-    showDirectoryPicker(options?: {
-      mode?: 'read' | 'readwrite'
-    }): Promise<FileSystemDirectoryHandle>;
-  }
-}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -91,72 +80,55 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+interface ProjectSuccessInfo {
+  projectName: string;
+  repoUrl: string;
+  nextSteps: string[];
+  createdAt?: string;
+}
+
 interface CreateProjectDialogProps {
   open: boolean;
   onClose: () => void;
+  template?: TemplateConfig;
+  onProjectCreated?: (projectInfo: ProjectSuccessInfo) => void;
 }
 
-// 脚手架选项
-const scaffoldOptions: Array<{ value: ScaffoldId; label: string }> = [
-  { value: 'vite', label: 'Vite' },
-  { value: 'next', label: 'Next.js' }
-];
 
-// 框架选项
-const frameworkOptions = [
-  { value: 'vanilla', label: 'Vanilla' },
-  { value: 'react', label: 'React' },
-  { value: 'vue', label: 'Vue' },
-  { value: 'preact', label: 'Preact' },
-  { value: 'lit', label: 'Lit' },
-  { value: 'svelte', label: 'Svelte' },
-  { value: 'solid', label: 'Solid' },
-  { value: 'qwik', label: 'Qwik' },
-  { value: 'angular', label: 'Angular' }
-];
 
-// 变体选项
-const variantOptions = [
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'typescript-swc', label: 'TypeScript + SWC' },
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'javascript-swc', label: 'JavaScript + SWC' }
-];
-
-export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps) {
+export function CreateProjectDialog({ open, onClose, template, onProjectCreated }: CreateProjectDialogProps) {
   const classes = useStyles();
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
   const [projectName, setProjectName] = useState('');
-  const [projectPath, setProjectPath] = useState('');
-  const [scaffold, setScaffold] = useState<ScaffoldId>('vite');
-  const [framework, setFramework] = useState('react');
-  const [variant, setVariant] = useState('typescript');
-  const [createGithub, setCreateGithub] = useState(false);
+  const [createGithub] = useState(true);
   const [isPrivate, setIsPrivate] = useState(false);
   const [description, setDescription] = useState('');
   const [token, setToken] = useState('');
   const [snackbarMessage, setSnackbarMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [successInfo, setSuccessInfo] = useState<{
-    localPath: string;
     projectName: string;
-    framework: string;
-    variant: string;
-    scaffold: ScaffoldId;
+    repoUrl?: string;
     nextSteps: string[];
   } | null>(null);
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
+      // 使用传入的模板，如果没有则使用默认模板
+      const tpl = template || (scaffolds[0].templates as TemplateConfig[]).find(t => t.id === 'vite-react-ts') as TemplateConfig;
+      
+      if (!tpl) {
+        throw new Error('未找到可用的模板');
+      }
+
       const options: ProjectOptions = {
-        scaffold,
+        scaffold: tpl.scaffold as ScaffoldId,
         name: projectName,
-        projectPath,
-        framework: scaffold === 'vite' ? framework : undefined,
-        variant: scaffold === 'vite' ? variant : undefined,
-        createGithub,
+        templateOwner: tpl.templateOwner,
+        templateRepo: tpl.templateRepo,
+        createGithub: true,
         isPrivate,
         description,
         token
@@ -168,30 +140,50 @@ export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps)
         // 先关闭创建对话框
         onClose();
 
-        // 显示成功对话框
-        setSuccessDialogOpen(true);
-        setSuccessInfo({
-          localPath: result.localPath,
+        // 准备成功信息
+        const successInfo = {
           projectName: result.projectName || projectName,
-          framework: result.framework || framework,
-          variant: result.variant || variant,
-          scaffold: scaffold,
+          repoUrl: result.repoUrl || '',
           nextSteps: result.nextSteps || [
-            `cd ${projectName}`,
-            'pnpm install',
-            'pnpm run dev'
-          ]
-        });
+            `git clone ${result.repoUrl}`,
+            `cd ${result.projectName || projectName}`,
+            'npm install',
+            'npm run dev'
+          ],
+          createdAt: new Date().toISOString()
+        };
+
+        // 如果有成功回调，调用它跳转到成功页面
+        if (onProjectCreated) {
+          onProjectCreated(successInfo);
+        } else {
+          // 否则显示成功对话框（向后兼容）
+          setSuccessDialogOpen(true);
+          setSuccessInfo(successInfo);
+        }
 
         // 显示成功提示
         setSnackbarMessage({
           type: 'success',
-          text: '✨ 项目创建成功！'
+          text: '🎉 项目创建成功！正在跳转到成功页面...'
         });
       } else {
+        // 根据错误类型显示不同的友好提示
+        let errorMessage = result.error || '创建失败，请重试';
+        
+        if (errorMessage.includes('同名仓库已存在')) {
+          errorMessage = '😅 仓库名称已被占用，请尝试其他名称（如：MyProject123、TestApp2024 等）';
+        } else if (errorMessage.includes('无效的 GitHub Token')) {
+          errorMessage = '🔑 GitHub Token 无效，请检查 Token 是否正确或是否已过期';
+        } else if (errorMessage.includes('缺少模板仓库信息')) {
+          errorMessage = '⚠️ 模板配置错误，请联系管理员';
+        } else if (errorMessage.includes('权限')) {
+          errorMessage = '🚫 权限不足，请确保 Token 有创建仓库的权限';
+        }
+        
         setSnackbarMessage({
           type: 'error',
-          text: result.error || '创建失败，请重试'
+          text: errorMessage
         });
       }
     } catch (error) {
@@ -211,55 +203,6 @@ export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps)
           创建新项目
         </DialogTitle>
         <DialogContent className={classes.content}>
-          <FormControl fullWidth variant="outlined" className={classes.field}>
-            <InputLabel>选择脚手架</InputLabel>
-            <Select
-              value={scaffold}
-              onChange={(e) => setScaffold(e.target.value as ScaffoldId)}
-              label="选择脚手架"
-            >
-              {scaffoldOptions.map(option => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {scaffold === 'vite' && (
-            <>
-              <FormControl fullWidth variant="outlined" className={classes.field}>
-                <InputLabel>选择框架</InputLabel>
-                <Select
-                  value={framework}
-                  onChange={(e) => setFramework(e.target.value as string)}
-                  label="选择框架"
-                >
-                  {frameworkOptions.map(option => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth variant="outlined" className={classes.field}>
-                <InputLabel>选择变体</InputLabel>
-                <Select
-                  value={variant}
-                  onChange={(e) => setVariant(e.target.value as string)}
-                  label="选择变体"
-                >
-                  {variantOptions.map(option => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </>
-          )}
-
           <TextField
             fullWidth
             label="项目名称"
@@ -270,27 +213,8 @@ export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps)
             placeholder="my-app"
           />
           
-          <TextField
-            fullWidth
-            label="项目路径"
-            value={projectPath}
-            onChange={(e) => setProjectPath(e.target.value)}
-            className={classes.field}
-            variant="outlined"
-            placeholder="请输入项目路径，例如：D:\projects"
-            helperText="请输入完整的项目路径"
-          />
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={createGithub}
-                onChange={(e) => setCreateGithub(e.target.checked)}
-                color="primary"
-              />
-            }
-            label="同时创建 GitHub 仓库"
-          />
+          {/* 默认创建 GitHub 仓库，不展示开关 */}
 
           {createGithub && (
             <Box className={classes.githubSection}>
@@ -342,9 +266,9 @@ export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps)
             onClick={handleSubmit}
             variant="contained"
             color="primary"
-            disabled={loading || !projectName || !projectPath}
+            disabled={loading || !projectName || !token}
           >
-            {loading ? '创建中...' : '创建项目'}
+            {loading ? '🚀 创建中...' : '✨ 创建项目'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -358,7 +282,7 @@ export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps)
         fullWidth
       >
         <DialogTitle className={classes.title}>
-          ✨ 项目创建成功
+          🎉 项目创建成功！
         </DialogTitle>
         <DialogContent className={classes.content}>
           {successInfo && (
@@ -367,26 +291,25 @@ export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps)
                 项目信息：
               </Typography>
               <Box className={classes.commandText}>
-                <Typography>📁 本地路径：{successInfo.localPath}</Typography>
                 <Typography>📦 项目名称：{successInfo.projectName}</Typography>
-                <Typography>🛠️ 脚手架：{scaffoldOptions.find(opt => opt.value === successInfo.scaffold)?.label}</Typography>
-                <Typography>⚛️ 框架：{frameworkOptions.find(opt => opt.value === successInfo.framework)?.label}</Typography>
-                <Typography>🔧 变体：{variantOptions.find(opt => opt.value === successInfo.variant)?.label}</Typography>
+                {successInfo.repoUrl && (
+                  <Typography>🔗 仓库地址：<Link href={successInfo.repoUrl} target="_blank" rel="noopener">{successInfo.repoUrl}</Link></Typography>
+                )}
               </Box>
 
-              <Typography variant="subtitle1" style={{ marginTop: theme.spacing(2) }}>
+              <Typography variant="subtitle2" gutterBottom style={{ marginTop: theme.spacing(2) }}>
                 下一步操作：
               </Typography>
               <Box className={classes.commandText}>
                 {successInfo.nextSteps.map((step, index) => (
-                  <Typography key={index} style={{ fontFamily: 'monospace' }}>
-                    $ {step}
+                  <Typography key={index} component="div">
+                    {index + 1}. {step}
                   </Typography>
                 ))}
               </Box>
 
               <Typography variant="body2" color="textSecondary" style={{ marginTop: theme.spacing(2) }}>
-                提示：项目创建后，请按照上述步骤进行初始化和启动。
+                💡 提示：您的项目已成功创建！请按照上述步骤克隆仓库并开始开发。
               </Typography>
             </>
           )}
@@ -398,16 +321,17 @@ export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps)
           >
             关闭
           </Button>
+          {successInfo?.repoUrl && (
           <Button
             variant="contained"
             color="primary"
             onClick={() => {
-              // 可以添加打开项目目录的功能
-              window.open(`file://${successInfo?.localPath}`);
+              window.open(successInfo.repoUrl, '_blank');
             }}
           >
-            打开项目目录
+            🚀 打开 GitHub 仓库
           </Button>
+          )}
         </DialogActions>
       </Dialog>
 
@@ -426,4 +350,4 @@ export function CreateProjectDialog({ open, onClose }: CreateProjectDialogProps)
       />
     </>
   );
-} 
+}
