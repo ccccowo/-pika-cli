@@ -1,11 +1,14 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import passport from 'passport';
 import { router as projectRouter } from './routes/project.js';
 import session from 'express-session';
 import { router as authRouter } from './routes/auth.js';
 import { router as tokenRouter } from './routes/tokens.js';
 import { router as repoRouter } from './routes/repos.js';
+import { router as templateRouter } from './routes/templates.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -33,6 +36,10 @@ app.use(session({
   }
 }));
 
+// 配置 Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
 // 健康检查
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -43,6 +50,7 @@ app.use('/api/project', projectRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/tokens', tokenRouter);
 app.use('/api/repos', repoRouter);
+app.use('/api/templates', templateRouter);
 
 // 404处理
 app.use((req, res) => {

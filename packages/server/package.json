@@ -14,11 +14,16 @@
     "@pika-cli/github": "workspace:^",
     "@pika-cli/types": "workspace:^",
     "@prisma/client": "^6.16.1",
+    "@types/passport": "^1.0.17",
+    "@types/passport-github2": "^1.2.9",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
     "express": "^4.18.3",
     "express-session": "^1.18.2",
     "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
     "zod": "^4.1.8"
   },
   "devDependencies": {

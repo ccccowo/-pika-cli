@@ -9,13 +9,18 @@ datasource db {
 
 model User {
   id           Int           @id @default(autoincrement())
-  email        String        @unique
-  passwordHash String
+  githubId     String        @unique
+  username     String
+  displayName  String?
+  email        String?
+  avatarUrl    String?
+  githubUrl    String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
   tokens       GithubToken[]
   repos        RepoRecord[]
+  templates    Template[]    // 用户创建的模板
 }
 
 model GithubToken {
@@ -38,6 +43,21 @@ model RepoRecord {
   isPrivate   Boolean  @default(false)
   htmlUrl     String?
   createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Template {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  name        String
+  description String?
+  owner       String   // GitHub 用户名或组织名
+  repo        String   // 仓库名
+  isPublic    Boolean  @default(true)
+  tags        String?  // JSON 字符串存储标签数组
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

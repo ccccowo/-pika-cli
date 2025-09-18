@@ -21,8 +21,10 @@ import {
   fade,
   Grid,
   Paper,
-  Divider
+  Divider,
+  Snackbar
 } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -32,6 +34,13 @@ import {
   Share as ShareIcon,
   Download as DownloadIcon
 } from '@material-ui/icons';
+import { 
+  getMyTemplates, 
+  createTemplate, 
+  updateTemplate, 
+  deleteTemplate,
+  Template 
+} from '../services/templates';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -89,16 +98,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface CustomTemplate {
-  id: string;
+  id: number;
   name: string;
-  description: string;
+  description?: string;
   templateOwner: string;
   templateRepo: string;
   scaffold: string;
   tags: string[];
   isPublic: boolean;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 interface TemplateManagerProps {
@@ -110,6 +119,12 @@ export function TemplateManager({ onTemplateSelect }: TemplateManagerProps) {
   const [templates, setTemplates] = useState<CustomTemplate[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<CustomTemplate | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -120,18 +135,51 @@ export function TemplateManager({ onTemplateSelect }: TemplateManagerProps) {
     isPublic: false,
   });
 
-  // 模拟从本地存储加载模板
-  useEffect(() => {
-    const savedTemplates = localStorage.getItem('customTemplates');
-    if (savedTemplates) {
-      setTemplates(JSON.parse(savedTemplates));
+  // 加载模板列表
+  const loadTemplates = async () => {
+    setLoading(true);
+    try {
+      const response = await getMyTemplates();
+      if (response.success) {
+        // 将 API 返回的模板转换为 CustomTemplate 格式
+        const customTemplates: CustomTemplate[] = response.templates.map(template => ({
+          id: template.id,
+          name: template.name,
+          description: template.description,
+          templateOwner: template.owner,
+          templateRepo: template.repo,
+          scaffold: 'vite', // 默认值，实际应该从模板配置中获取
+          tags: template.tags,
+          isPublic: template.isPublic,
+          createdAt: template.createdAt,
+        }));
+        setTemplates(customTemplates);
+      } else {
+        setSnackbar({
+          open: true,
+          message: '加载模板失败',
+          severity: 'error'
+        });
+      }
+    } catch (error) {
+      console.error('加载模板失败:', error);
+      setSnackbar({
+        open: true,
+        message: '加载模板失败',
+        severity: 'error'
+      });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    loadTemplates();
   }, []);
 
-  // 保存模板到本地存储
-  const saveTemplates = (newTemplates: CustomTemplate[]) => {
-    setTemplates(newTemplates);
-    localStorage.setItem('customTemplates', JSON.stringify(newTemplates));
+  // 显示消息
+  const showMessage = (message: string, severity: 'success' | 'error' = 'success') => {
+    setSnackbar({ open: true, message, severity });
   };
 
   const handleAddTemplate = () => {
@@ -162,42 +210,60 @@ export function TemplateManager({ onTemplateSelect }: TemplateManagerProps) {
     setOpenDialog(true);
   };
 
-  const handleDeleteTemplate = (templateId: string) => {
+  const handleDeleteTemplate = async (templateId: number) => {
     if (window.confirm('确定要删除这个模板吗？')) {
-      const newTemplates = templates.filter(t => t.id !== templateId);
-      saveTemplates(newTemplates);
+      try {
+        const response = await deleteTemplate(templateId);
+        if (response.success) {
+          showMessage('模板删除成功');
+          loadTemplates(); // 重新加载模板列表
+        } else {
+          showMessage(response.error || '删除失败', 'error');
+        }
+      } catch (error) {
+        console.error('删除模板失败:', error);
+        showMessage('删除模板失败', 'error');
+      }
     }
   };
 
-  const handleSaveTemplate = () => {
+  const handleSaveTemplate = async () => {
     if (!formData.name || !formData.templateOwner || !formData.templateRepo) {
-      alert('请填写必要信息');
+      showMessage('请填写必要信息', 'error');
       return;
     }
 
-    const now = new Date().toISOString();
-    const template: CustomTemplate = {
-      id: editingTemplate?.id || `template_${Date.now()}`,
-      name: formData.name,
-      description: formData.description,
-      templateOwner: formData.templateOwner,
-      templateRepo: formData.templateRepo,
-      scaffold: formData.scaffold,
-      tags: formData.tags,
-      isPublic: formData.isPublic,
-      createdAt: editingTemplate?.createdAt || now,
-      updatedAt: now,
-    };
+    try {
+      const templateData = {
+        name: formData.name,
+        description: formData.description,
+        owner: formData.templateOwner,
+        repo: formData.templateRepo,
+        isPublic: formData.isPublic,
+        tags: formData.tags,
+      };
 
-    let newTemplates;
-    if (editingTemplate) {
-      newTemplates = templates.map(t => t.id === editingTemplate.id ? template : t);
-    } else {
-      newTemplates = [...templates, template];
+      let response;
+      if (editingTemplate) {
+        response = await updateTemplate({
+          id: editingTemplate.id,
+          ...templateData,
+        });
+      } else {
+        response = await createTemplate(templateData);
+      }
+
+      if (response.success) {
+        showMessage(editingTemplate ? '模板更新成功' : '模板创建成功');
+        setOpenDialog(false);
+        loadTemplates(); // 重新加载模板列表
+      } else {
+        showMessage(response.error || '保存失败', 'error');
+      }
+    } catch (error) {
+      console.error('保存模板失败:', error);
+      showMessage('保存模板失败', 'error');
     }
-
-    saveTemplates(newTemplates);
-    setOpenDialog(false);
   };
 
   const handleTagAdd = (tag: string) => {
@@ -457,6 +523,20 @@ export function TemplateManager({ onTemplateSelect }: TemplateManagerProps) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* 消息提示 */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+      >
+        <Alert 
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))} 
+          severity={snackbar.severity}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

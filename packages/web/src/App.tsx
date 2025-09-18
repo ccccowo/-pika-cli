@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Tabs, Tab, Box } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { ThemeProvider, createTheme, CssBaseline, Tabs, Tab, Box, AppBar, Toolbar, Typography, Container } from '@material-ui/core';
 import { TemplateList } from './components/TemplateList';
 import { ProjectSuccessPage } from './components/ProjectSuccessPage';
 import { TemplateManager } from './components/TemplateManager';
+import { UserAvatar } from './components/UserAvatar';
+import { LoginButton } from './components/LoginButton';
+import { useAuth } from './hooks/useAuth';
 import type { TemplateId } from './types';
 import { cn } from './lib/utils';
 
@@ -35,6 +38,8 @@ export default function App() {
   const [showSuccessPage, setShowSuccessPage] = useState(false);
   const [successInfo, setSuccessInfo] = useState<ProjectSuccessInfo | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
+  
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   const handleProjectCreated = (projectInfo: ProjectSuccessInfo) => {
     setSuccessInfo(projectInfo);
@@ -47,9 +52,20 @@ export default function App() {
     setSelectedTemplate(undefined);
   };
 
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleTabChange = (_event: React.ChangeEvent<{}>, newValue: number) => {
     setCurrentTab(newValue);
   };
+
+  // 处理 GitHub 登录回调
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const loginStatus = urlParams.get('login');
+    
+    if (loginStatus === 'success') {
+      // 登录成功，重新检查用户状态
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   if (showSuccessPage && successInfo) {
     return (
@@ -66,18 +82,34 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <AppBar position="static" color="default" elevation={1}>
+        <Toolbar>
+          <Typography variant="h6" style={{ flexGrow: 1 }}>
+            🚀 Pika CLI
+          </Typography>
+          {isLoading ? (
+            <Typography variant="body2">加载中...</Typography>
+          ) : isAuthenticated && user ? (
+            <UserAvatar user={user} onLogout={logout} />
+          ) : (
+            <LoginButton />
+          )}
+        </Toolbar>
+      </AppBar>
+      
       <main className={cn(
         "min-h-screen bg-background",
         "p-4 md:p-8"
       )}>
-        <div className="max-w-6xl mx-auto space-y-8">
-          {/* 导航标签 */}
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', marginBottom: 4 }}>
-            <Tabs value={currentTab} onChange={handleTabChange}>
-              <Tab label="🏠 官方模板" />
-              <Tab label="📚 我的模板" />
-            </Tabs>
-          </Box>
+        <Container maxWidth="lg">
+          <div className="space-y-8">
+            {/* 导航标签 */}
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', marginBottom: 4 }}>
+              <Tabs value={currentTab} onChange={handleTabChange}>
+                <Tab label="🏠 官方模板" />
+                <Tab label="📚 我的模板" disabled={!isAuthenticated} />
+              </Tabs>
+            </Box>
 
           {/* 内容区域 */}
           {currentTab === 0 && (
@@ -88,23 +120,24 @@ export default function App() {
             />
           )}
           
-          {currentTab === 1 && (
-            <TemplateManager 
-              onTemplateSelect={(template) => {
-                // 将自定义模板转换为标准格式
-                const customTemplate = {
-                  id: template.id,
-                  name: template.name,
-                  description: template.description,
-                  scaffold: template.scaffold,
-                  templateOwner: template.templateOwner,
-                  templateRepo: template.templateRepo,
-                };
-                setSelectedTemplate(customTemplate as any);
-              }}
-            />
-          )}
-        </div>
+            {currentTab === 1 && (
+              <TemplateManager 
+                onTemplateSelect={(template) => {
+                  // 将自定义模板转换为标准格式
+                  const customTemplate = {
+                    id: template.id,
+                    name: template.name,
+                    description: template.description,
+                    scaffold: template.scaffold,
+                    templateOwner: template.templateOwner,
+                    templateRepo: template.templateRepo,
+                  };
+                  setSelectedTemplate(customTemplate as any);
+                }}
+              />
+            )}
+          </div>
+        </Container>
       </main>
     </ThemeProvider>
   );
