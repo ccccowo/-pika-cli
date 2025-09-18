@@ -179,6 +179,19 @@ export function CreateProjectDialog({ open, onClose, template, onProjectCreated 
           errorMessage = '⚠️ 模板配置错误，请联系管理员';
         } else if (errorMessage.includes('权限')) {
           errorMessage = '🚫 权限不足，请确保 Token 有创建仓库的权限';
+        } else if (errorMessage.includes('HTTP error! status: 400')) {
+          errorMessage = '❌ 请求参数错误，请检查输入信息';
+        } else if (errorMessage.includes('HTTP error! status: 401')) {
+          errorMessage = '🔐 认证失败，请检查 GitHub Token';
+        } else if (errorMessage.includes('HTTP error! status: 403')) {
+          errorMessage = '🚫 权限不足，请检查 Token 权限';
+        } else if (errorMessage.includes('HTTP error! status: 404')) {
+          errorMessage = '🔍 模板仓库不存在，请检查仓库地址';
+        } else if (errorMessage.includes('HTTP error! status: 500')) {
+          errorMessage = '⚠️ 服务器内部错误，请稍后重试';
+        } else {
+          // 如果后端返回了其他错误信息，直接显示
+          errorMessage = result.error || '创建失败，请重试';
         }
         
         setSnackbarMessage({
