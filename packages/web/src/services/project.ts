@@ -48,6 +48,22 @@ export interface CreateResult {
   projectName: string;
   repoUrl?: string;
   nextSteps: string[];
+  pagesUrl?: string;
+  pagesEnabled?: boolean;
+}
+
+export interface DeploymentStatus {
+  success: boolean;
+  pages: {
+    status: string;
+    url?: string;
+  };
+  workflow: {
+    status: string;
+    conclusion?: string;
+  };
+  isDeployed: boolean;
+  isBuilding: boolean;
 }
 
 // 选择文件夹 - 直接返回输入的路径
@@ -103,6 +119,50 @@ export async function createProject(options: ProjectOptions): Promise<CreateResu
       error: error instanceof Error ? error.message : '服务器连接失败，请检查服务器是否正常运行',
       projectName: options.name,
       nextSteps: []
+    };
+  }
+}
+
+// 检查Pages部署状态
+export async function checkDeploymentStatus(
+  token: string,
+  repoUrl: string
+): Promise<DeploymentStatus> {
+  try {
+    // 从仓库URL中提取owner和repo
+    const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+    if (!match) {
+      throw new Error('无效的GitHub仓库URL');
+    }
+    
+    const [, owner, repo] = match;
+    
+    const response = await fetchWithRetry(`${API_BASE_URL}/project/check-pages-status`, {
+      method: 'POST',
+      body: JSON.stringify({ token, owner, repo }),
+    });
+
+    const result = await response.json();
+    
+    if (!result.success) {
+      return {
+        success: false,
+        pages: { status: 'error' },
+        workflow: { status: 'error' },
+        isDeployed: false,
+        isBuilding: false
+      };
+    }
+
+    return result;
+  } catch (error) {
+    console.error('检查部署状态失败:', error);
+    return {
+      success: false,
+      pages: { status: 'error' },
+      workflow: { status: 'error' },
+      isDeployed: false,
+      isBuilding: false
     };
   }
 } 

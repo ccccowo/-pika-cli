@@ -15,6 +15,7 @@ import {
   Snackbar,
   useTheme,
   Link,
+  MenuItem,
 } from '@material-ui/core';
 import type { ProjectOptions, ScaffoldId, TemplateConfig } from '../types';
 import { createProject } from '../services/project';
@@ -105,6 +106,8 @@ export function CreateProjectDialog({ open, onClose, template, onProjectCreated 
   const [isPrivate, setIsPrivate] = useState(false);
   const [description, setDescription] = useState('');
   const [token, setToken] = useState('');
+  const [enablePages, setEnablePages] = useState(false);
+  const [framework, setFramework] = useState('vite');
   const [snackbarMessage, setSnackbarMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [successInfo, setSuccessInfo] = useState<{
@@ -131,7 +134,9 @@ export function CreateProjectDialog({ open, onClose, template, onProjectCreated 
         createGithub: true,
         isPrivate,
         description,
-        token
+        token,
+        enablePages,
+        framework
       };
 
       const result = await createProject(options);
@@ -144,6 +149,9 @@ export function CreateProjectDialog({ open, onClose, template, onProjectCreated 
         const successInfo = {
           projectName: result.projectName || projectName,
           repoUrl: result.repoUrl || '',
+          pagesUrl: result.pagesUrl,
+          pagesEnabled: result.pagesEnabled,
+          token: token, // 传递token用于状态监控
           nextSteps: result.nextSteps || [
             `git clone ${result.repoUrl}`,
             `cd ${result.projectName || projectName}`,
@@ -268,6 +276,57 @@ export function CreateProjectDialog({ open, onClose, template, onProjectCreated 
                 }
                 label="设为私有仓库"
               />
+
+              {/* GitHub Pages 部署选项 */}
+              <Box style={{ marginTop: 16, padding: 16, backgroundColor: 'rgba(25, 118, 210, 0.05)', borderRadius: 8 }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={enablePages}
+                      onChange={(e) => setEnablePages(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label={
+                    <Box>
+                      <Typography variant="subtitle2">
+                        🌐 启用 GitHub Pages 自动部署
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        每次推送到主分支都会自动构建并部署到 GitHub Pages
+                      </Typography>
+                    </Box>
+                  }
+                />
+                
+                {enablePages && (
+                  <Box style={{ marginTop: 12 }}>
+                    <TextField
+                      fullWidth
+                      select
+                      label="前端框架"
+                      value={framework}
+                      onChange={(e) => setFramework(e.target.value)}
+                      className={classes.field}
+                      variant="outlined"
+                      size="small"
+                      helperText="选择对应的前端框架以配置正确的构建命令"
+                    >
+                      <MenuItem value="vite">Vite (React/Vue)</MenuItem>
+                      <MenuItem value="next">Next.js</MenuItem>
+                      <MenuItem value="react">Create React App</MenuItem>
+                      <MenuItem value="vue">Vue CLI</MenuItem>
+                    </TextField>
+                    
+                    <Typography variant="caption" color="textSecondary" display="block">
+                      📍 部署地址: https://yourusername.github.io/{projectName || 'project-name'}
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary" display="block">
+                      ⚡ 首次部署需要 2-5 分钟，后续更新会自动触发
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
             </Box>
           )}
         </DialogContent>
@@ -307,6 +366,9 @@ export function CreateProjectDialog({ open, onClose, template, onProjectCreated 
                 <Typography>📦 项目名称：{successInfo.projectName}</Typography>
                 {successInfo.repoUrl && (
                   <Typography>🔗 仓库地址：<Link href={successInfo.repoUrl} target="_blank" rel="noopener">{successInfo.repoUrl}</Link></Typography>
+                )}
+                {successInfo.pagesEnabled && successInfo.pagesUrl && (
+                  <Typography>🌐 网站地址：<Link href={successInfo.pagesUrl} target="_blank" rel="noopener">{successInfo.pagesUrl}</Link></Typography>
                 )}
               </Box>
 

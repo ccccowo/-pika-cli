@@ -33,6 +33,8 @@ export interface ProjectOptions {
   isPrivate?: boolean;
   token?: string;
   createGithub?: boolean;
+  enablePages?: boolean;
+  framework?: string;
 }
 
 // GitHub Token 配置

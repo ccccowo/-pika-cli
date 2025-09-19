@@ -21,6 +21,7 @@ import {
   Code,
   CloudDownload as Download
 } from '@material-ui/icons';
+import { DeploymentStatusComponent } from './DeploymentStatus';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -132,6 +133,9 @@ interface ProjectSuccessInfo {
   repoUrl: string;
   nextSteps: string[];
   createdAt?: string;
+  pagesUrl?: string;
+  pagesEnabled?: boolean;
+  token?: string;
 }
 
 interface ProjectSuccessPageProps {
@@ -220,9 +224,48 @@ export function ProjectSuccessPage({ projectInfo, onBackToHome }: ProjectSuccess
                   </IconButton>
                 </Tooltip>
               </Box>
+
+              {/* GitHub Pages 信息 */}
+              {projectInfo.pagesEnabled && projectInfo.pagesUrl && (
+                <>
+                  <Box className={classes.infoRow}>
+                    <OpenInNew />
+                    <Typography variant="body1">
+                      <strong>网站地址：</strong>
+                    </Typography>
+                  </Box>
+
+                  <Box className={classes.repoUrl}>
+                    <Typography component="span" style={{ flex: 1 }}>
+                      {projectInfo.pagesUrl}
+                    </Typography>
+                    <Tooltip title="打开网站">
+                      <IconButton 
+                        size="small" 
+                        onClick={() => window.open(projectInfo.pagesUrl, '_blank')}
+                        className={classes.copyButton}
+                      >
+                        <OpenInNew fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </>
+              )}
             </Box>
 
             <Divider style={{ margin: '24px 0' }} />
+
+            {/* GitHub Pages 部署状态 */}
+            {projectInfo.pagesEnabled && projectInfo.token && (
+              <>
+                <DeploymentStatusComponent
+                  token={projectInfo.token}
+                  repoUrl={projectInfo.repoUrl}
+                  pagesUrl={projectInfo.pagesUrl}
+                />
+                <Divider style={{ margin: '24px 0' }} />
+              </>
+            )}
 
             {/* 下一步操作 */}
             <Box>
@@ -259,6 +302,18 @@ export function ProjectSuccessPage({ projectInfo, onBackToHome }: ProjectSuccess
                 打开 GitHub 仓库
               </Button>
               
+              {projectInfo.pagesEnabled && projectInfo.pagesUrl && (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  size="large"
+                  startIcon={<OpenInNew />}
+                  onClick={() => window.open(projectInfo.pagesUrl, '_blank')}
+                >
+                  打开网站
+                </Button>
+              )}
+              
               <Button
                 variant="outlined"
                 color="primary"
@@ -284,6 +339,9 @@ export function ProjectSuccessPage({ projectInfo, onBackToHome }: ProjectSuccess
             <Box style={{ marginTop: 24, padding: 16, backgroundColor: fade('#4caf50', 0.1), borderRadius: 8 }}>
               <Typography variant="body2" color="textSecondary">
                 💡 <strong>提示：</strong> 您的项目已成功创建！现在可以克隆仓库到本地开始开发了。
+                {projectInfo.pagesEnabled && (
+                  <> 网站将在几分钟后自动部署完成，请耐心等待。</>
+                )}
                 如果遇到任何问题，请检查 GitHub 仓库设置或联系技术支持。
               </Typography>
             </Box>
